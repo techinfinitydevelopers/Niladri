@@ -28,6 +28,9 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// ── Public (no-auth) API for landing pages ──
+app.use('/api/public', require('./routes/public.routes'));
+
 // Static files
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(path.join(__dirname, '../data/uploads')));
