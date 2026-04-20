@@ -5,11 +5,12 @@ const db = require('../db');
 router.get('/config', (req, res) => {
   try {
     const row = db.prepare('SELECT * FROM app_config WHERE id = 1').get();
-    if (!row) return res.json({ s3: {}, smtp: {}, general: {} });
+    if (!row) return res.json({ s3: {}, smtp: {}, general: {}, razorpay: {} });
     res.json({
       s3: JSON.parse(row.s3_config || '{}'),
       smtp: JSON.parse(row.smtp_config || '{}'),
-      general: JSON.parse(row.general_config || '{}')
+      general: JSON.parse(row.general_config || '{}'),
+      razorpay: JSON.parse(row.razorpay_config || '{}')
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -59,6 +60,22 @@ router.put('/config/general', (req, res) => {
       db.prepare('INSERT INTO app_config (id, general_config) VALUES (1, ?)').run(json);
     }
     res.json({ message: 'General configuration saved' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT Razorpay config
+router.put('/config/razorpay', (req, res) => {
+  try {
+    const existing = db.prepare('SELECT id FROM app_config WHERE id = 1').get();
+    const json = JSON.stringify(req.body);
+    if (existing) {
+      db.prepare("UPDATE app_config SET razorpay_config = ?, updated_at = datetime('now') WHERE id = 1").run(json);
+    } else {
+      db.prepare('INSERT INTO app_config (id, razorpay_config) VALUES (1, ?)').run(json);
+    }
+    res.json({ message: 'Razorpay configuration saved' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

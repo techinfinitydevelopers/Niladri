@@ -6,9 +6,11 @@ const fs = require('fs');
 
 const app = express();
 
-// Ensure uploads dir exists
+// Ensure data dirs exist
 const uploadDir = process.env.UPLOAD_DIR || './data/uploads';
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const certDir = path.join(__dirname, '../data/certificates');
+if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
 
 app.use(cors());
 app.use(express.json());
@@ -31,6 +33,27 @@ app.use('/api/quotes', require('./middleware/auth'), require('./routes/quotes.ro
 app.use('/api/admin', require('./middleware/auth'), require('./routes/admin.routes'));
 app.use('/api/chapters', require('./middleware/auth'), require('./routes/chapters.routes'));
 app.use('/api/assignments', require('./middleware/auth'), require('./routes/assignments.routes'));
+
+// Sprint 1+2: Learning core & communication
+app.use('/api/quizzes', require('./middleware/auth'), require('./routes/quiz.routes'));
+app.use('/api/notifications', require('./middleware/auth'), require('./routes/notifications.routes'));
+app.use('/api/messages', require('./middleware/auth'), require('./routes/messages.routes'));
+app.use('/api/profile', require('./middleware/auth'), require('./routes/profile.routes'));
+
+// Sprint 3: Analytics & engagement
+app.use('/api/analytics', require('./middleware/auth'), require('./routes/analytics.routes'));
+app.use('/api/practice-log', require('./middleware/auth'), require('./routes/practice-log.routes'));
+app.use('/api/calendar', require('./middleware/auth'), require('./routes/calendar.routes'));
+
+// Sprint 4+5+6: Monetisation, growth, scale
+app.use('/api/payments', require('./middleware/auth'), require('./routes/payments.routes'));
+app.use('/api/certificates', require('./middleware/auth'), require('./routes/certificates.routes'));
+app.use('/api/live-sessions', require('./middleware/auth'), require('./routes/live-classes.routes'));
+app.use('/api/search', require('./middleware/auth'), require('./routes/search.routes'));
+app.use('/api/announcements', require('./middleware/auth'), require('./routes/announcements.routes'));
+app.use('/api/resources', require('./middleware/auth'), require('./routes/resources.routes'));
+app.use('/api/email', require('./middleware/auth'), require('./routes/email.routes'));
+app.use('/api/roles', require('./middleware/auth'), require('./routes/roles.routes'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gradebook — The Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/archive.css">
+  <style>
+    .grade-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--parchment); border-radius: var(--radius); padding: 4px; width: fit-content; }
+    .grade-tab { padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; color: var(--text-light); cursor: pointer; transition: all var(--transition); }
+    .grade-tab.active { background: var(--crimson); color: var(--parchment); }
+    .grade-tab:hover:not(.active) { background: var(--parchment-dark); color: var(--text-dark); }
+    .course-section { margin-bottom: 32px; }
+    .course-section-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 20px; font-weight: 600; color: var(--text-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .course-section-title .course-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--crimson); }
+    .grade-score { font-weight: 600; font-size: 13px; }
+    .grade-score .fraction { color: var(--text-dark); }
+    .grade-score .score-bar { height: 4px; background: var(--parchment-dark); border-radius: 99px; margin-top: 4px; overflow: hidden; min-width: 80px; }
+    .grade-score .score-fill { height: 100%; border-radius: 99px; background: var(--crimson); }
+    .grade-letter { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; font-weight: 700; font-size: 14px; }
+    .grade-A { background: rgba(45,79,30,0.12); color: var(--forest); }
+    .grade-B { background: rgba(45,79,30,0.08); color: var(--forest-dark); }
+    .grade-C { background: rgba(209,161,78,0.15); color: var(--gold-dark); }
+    .grade-D { background: rgba(139,46,38,0.10); color: var(--crimson); }
+    .grade-F { background: rgba(139,46,38,0.18); color: var(--crimson-dark); }
+    .status-pending { background: rgba(209,161,78,0.18); color: var(--gold-dark); }
+    .status-submitted { background: transparent; color: var(--forest); border: 1.5px solid var(--forest); }
+    .status-graded { background: rgba(139,46,38,0.12); color: var(--crimson); }
+    .status-returned { background: rgba(0,0,0,0.07); color: var(--text-light); }
+    .pending-card { background: var(--parchment); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+    .pending-card .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--crimson); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--parchment); flex-shrink: 0; }
+    .pending-card-info { flex: 1; min-width: 0; }
+    .pending-card-name { font-weight: 600; font-size: 14px; color: var(--text-dark); }
+    .pending-card-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .student-search { display: flex; align-items: center; gap: 8px; background: var(--parchment); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 9px 14px; max-width: 320px; margin-bottom: 16px; }
+    .student-search input { border: none; outline: none; background: none; font-family: inherit; font-size: 14px; color: var(--text-dark); width: 100%; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">The Archive</div>
+      <div class="brand-sub" id="sb-portal">Student Portal</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/student-dashboard.html" class="nav-item" id="nav-dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a href="/course-catalog.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        My Courses
+      </a>
+      <a href="/gradebook.html" class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Gradebook
+      </a>
+      <a href="/quiz-builder.html" class="nav-item" id="nav-quiz-builder" style="display:none;">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Quiz Builder
+      </a>
+      <a href="/messaging.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+      </a>
+      <a href="/notifications.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notifications
+      </a>
+      <a href="/student-profile.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
+      <a href="/sheet-music.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Sheet Music
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="handleLogout()">
+        <div class="sidebar-avatar" id="sb-avatar">—</div>
+        <div class="sidebar-user-info">
+          <div class="user-name" id="sb-name">Loading…</div>
+          <div class="user-role" id="sb-role">student</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-title" id="page-title">Gradebook</div>
+      <div class="topbar-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search assignments…" id="search-input">
+      </div>
+      <div class="topbar-actions">
+        <a href="/notifications.html" class="icon-btn" title="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge-dot" id="notif-dot" style="display:none;"></span>
+        </a>
+        <div class="topbar-avatar" id="topbar-avatar">—</div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Student View -->
+      <div id="student-view">
+        <div style="margin-bottom:28px;">
+          <h1 style="font-family:'Newsreader',serif;font-style:italic;font-size:32px;font-weight:600;color:var(--crimson);margin-bottom:6px;">My Gradebook</h1>
+          <p style="font-size:14px;color:var(--text-light);">Track your assignment scores, feedback, and overall academic progress.</p>
+        </div>
+        <div class="stats-row" id="student-stats">
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="stat-number" id="stat-avg">—</div>
+            <div class="stat-label">Overall Average</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+            <div class="stat-number" id="stat-completed">—</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="stat-number" id="stat-pending-count">—</div>
+            <div class="stat-label">Pending</div>
+          </div>
+        </div>
+        <div id="student-grades-content">
+          <div class="card skeleton" style="height:200px;"></div>
+        </div>
+      </div>
+
+      <!-- Instructor View -->
+      <div id="instructor-view" style="display:none;">
+        <div style="margin-bottom:24px;">
+          <h1 style="font-family:'Newsreader',serif;font-style:italic;font-size:32px;font-weight:600;color:var(--crimson);margin-bottom:6px;">Gradebook</h1>
+          <p style="font-size:14px;color:var(--text-light);">Review student submissions, assign grades, and track class performance.</p>
+        </div>
+        <div class="grade-tabs">
+          <div class="grade-tab active" onclick="switchTab('pending')">Pending Grading</div>
+          <div class="grade-tab" onclick="switchTab('students')">All Students</div>
+          <div class="grade-tab" onclick="switchTab('bycourse')">By Course</div>
+        </div>
+        <div id="tab-pending" class="tab-panel active">
+          <div id="pending-list"><div class="card skeleton" style="height:100px;"></div></div>
+        </div>
+        <div id="tab-students" class="tab-panel">
+          <div class="student-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search students…" id="student-search" oninput="filterStudents()">
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="students-table">
+              <thead><tr><th>Student</th><th>Enrolled Courses</th><th>Avg Grade</th><th>Submissions</th></tr></thead>
+              <tbody id="students-tbody"><tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-light);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="tab-bycourse" class="tab-panel">
+          <div id="bycourse-content"><div class="card skeleton" style="height:200px;"></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal-overlay" id="feedback-modal" style="display:none;">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title">Submission Feedback</div>
+    <div id="feedback-content" style="margin-bottom:20px;"></div>
+    <div id="feedback-audio-wrap" style="display:none;margin-bottom:16px;">
+      <div class="form-label">Audio Feedback</div>
+      <audio id="feedback-audio" controls style="width:100%;margin-top:6px;"></audio>
+    </div>
+    <button class="btn btn-ghost" onclick="document.getElementById('feedback-modal').style.display='none'">Close</button>
+  </div>
+</div>
+
+<!-- Grade Modal (Instructor) -->
+<div class="modal-overlay" id="grade-modal" style="display:none;">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title">Grade Submission</div>
+    <input type="hidden" id="grade-sub-id">
+    <div id="grade-sub-info" style="background:var(--parchment-dark);border-radius:var(--radius);padding:12px 14px;margin-bottom:18px;font-size:13px;color:var(--text-mid);"></div>
+    <div class="form-group">
+      <label class="form-label">Score (0–100)</label>
+      <input class="form-input" type="number" id="grade-score" min="0" max="100" placeholder="e.g. 87">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Written Feedback</label>
+      <textarea class="form-textarea" id="grade-feedback" placeholder="Provide detailed feedback for the student…"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="submitGrade()">Submit Grade</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('grade-modal').style.display='none'">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script>
+  let currentUser = null;
+  let allStudentsData = [];
+  let activeTab = 'pending';
+
+  function toast(msg, type='success') {
+    const tc = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type === 'error' ? 'error' : ''}`;
+    t.textContent = msg;
+    tc.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('archive_token');
+    localStorage.removeItem('archive_user');
+    window.location.href = '/index.html';
+  }
+
+  function gradeLetter(score) {
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
+  }
+
+  function formatDate(str) {
+    if (!str) return '—';
+    return new Date(str).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function relativeTime(str) {
+    if (!str) return '';
+    const diff = Date.now() - new Date(str).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  }
+
+  function statusBadge(status) {
+    const map = { pending: 'Pending', submitted: 'Submitted', graded: 'Graded', returned: 'Returned' };
+    const cls = `status-${status || 'pending'}`;
+    return `<span class="badge ${cls}">${map[status] || status || 'Pending'}</span>`;
+  }
+
+  document.addEventListener('userLoaded', (e) => {
+    currentUser = e.detail;
+    const initials = currentUser.avatar_initials || (currentUser.first_name[0] + currentUser.last_name[0]);
+    document.getElementById('sb-avatar').textContent = initials;
+    document.getElementById('topbar-avatar').textContent = initials;
+    document.getElementById('sb-name').textContent = `${currentUser.first_name} ${currentUser.last_name}`;
+    document.getElementById('sb-role').textContent = currentUser.role;
+
+    if (currentUser.role === 'instructor') {
+      document.getElementById('sb-portal').textContent = 'Instructor Portal';
+      document.getElementById('nav-dashboard').href = '/instructor-dashboard.html';
+      document.getElementById('nav-quiz-builder').style.display = 'flex';
+      document.getElementById('student-view').style.display = 'none';
+      document.getElementById('instructor-view').style.display = 'block';
+      document.getElementById('page-title').textContent = 'Gradebook';
+      loadInstructorView();
+    } else {
+      loadStudentView();
+    }
+
+    loadUnreadCount();
+  });
+
+  async function loadUnreadCount() {
+    try {
+      const data = await api.get('/api/notifications/unread-count');
+      if (data.count > 0) document.getElementById('notif-dot').style.display = 'block';
+    } catch {}
+  }
+
+  async function loadStudentView() {
+    try {
+      const data = await api.get('/api/submissions/me');
+      const subs = data.submissions || [];
+      const graded = subs.filter(s => s.status === 'graded' && s.grade);
+      const scores = graded.map(s => parseFloat(s.grade)).filter(n => !isNaN(n));
+      const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+      document.getElementById('stat-avg').textContent = avg !== null ? avg + '%' : '—';
+      document.getElementById('stat-completed').textContent = graded.length;
+      document.getElementById('stat-pending-count').textContent = subs.filter(s => s.status === 'pending').length;
+      renderStudentGrades(subs);
+    } catch (err) {
+      document.getElementById('student-grades-content').innerHTML = '<div class="card card-sm"><p style="color:var(--text-light);font-size:13px;">Could not load grades.</p></div>';
+    }
+  }
+
+  function renderStudentGrades(subs) {
+    const container = document.getElementById('student-grades-content');
+    if (!subs.length) {
+      container.innerHTML = '<div class="card"><div class="empty-state" style="text-align:center;padding:40px;"><div style="font-size:40px;margin-bottom:12px;">📝</div><h3 style="font-family:Newsreader,serif;font-style:italic;font-size:20px;">No submissions yet</h3><p style="color:var(--text-light);font-size:13px;">Your assignment grades will appear here once you submit work.</p></div></div>';
+      return;
+    }
+    // Group by course
+    const byCourse = {};
+    subs.forEach(s => {
+      const key = s.course_title || 'Uncategorised';
+      if (!byCourse[key]) byCourse[key] = [];
+      byCourse[key].push(s);
+    });
+    container.innerHTML = Object.entries(byCourse).map(([course, items]) => `
+      <div class="course-section">
+        <div class="course-section-title"><span class="course-dot"></span>${course}</div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Assignment</th>
+                <th>Submitted</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map(s => {
+                const score = parseFloat(s.grade);
+                const isNumeric = !isNaN(score);
+                const letter = isNumeric ? gradeLetter(score) : '—';
+                return `
+                  <tr>
+                    <td style="font-weight:600;font-size:13px;">${s.lesson_title || 'Assignment'}</td>
+                    <td style="font-size:12px;color:var(--text-light);">${formatDate(s.submitted_at)}</td>
+                    <td>
+                      ${isNumeric ? `
+                        <div class="grade-score">
+                          <div class="fraction">${score}/100</div>
+                          <div class="score-bar"><div class="score-fill" style="width:${score}%;"></div></div>
+                        </div>
+                      ` : `<span style="color:var(--text-light);font-size:13px;">${s.grade || '—'}</span>`}
+                    </td>
+                    <td>
+                      ${isNumeric ? `<div class="grade-letter grade-${letter}">${letter}</div>` : '<span style="color:var(--text-light);">—</span>'}
+                    </td>
+                    <td>${statusBadge(s.status)}</td>
+                    <td>
+                      ${s.feedback ? `<button class="btn btn-sm btn-outline" onclick="viewFeedback('${encodeURIComponent(s.feedback || '')}', '${s.audio_feedback || ''}')">View Feedback</button>` : ''}
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function viewFeedback(feedbackEncoded, audioUrl) {
+    const feedback = decodeURIComponent(feedbackEncoded);
+    document.getElementById('feedback-content').innerHTML = `<p style="font-size:14px;line-height:1.7;color:var(--text-mid);">${feedback}</p>`;
+    const audioWrap = document.getElementById('feedback-audio-wrap');
+    if (audioUrl) {
+      document.getElementById('feedback-audio').src = audioUrl;
+      audioWrap.style.display = 'block';
+    } else {
+      audioWrap.style.display = 'none';
+    }
+    document.getElementById('feedback-modal').style.display = 'flex';
+  }
+
+  // ── Instructor view ──
+  function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.grade-tab').forEach((el, i) => {
+      el.classList.toggle('active', ['pending','students','bycourse'][i] === tab);
+    });
+    document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    if (tab === 'students' && !allStudentsData.length) loadAllStudents();
+    if (tab === 'bycourse') loadByCourse();
+  }
+
+  async function loadInstructorView() {
+    try {
+      const data = await api.get('/api/submissions/instructor');
+      renderPendingSubmissions(data.submissions || []);
+    } catch {
+      document.getElementById('pending-list').innerHTML = '<div class="card card-sm"><p style="color:var(--text-light);font-size:13px;">Could not load submissions.</p></div>';
+    }
+  }
+
+  function renderPendingSubmissions(subs) {
+    const container = document.getElementById('pending-list');
+    if (!subs.length) {
+      container.innerHTML = '<div class="card"><div style="text-align:center;padding:40px;"><div style="font-size:36px;margin-bottom:12px;">🎉</div><h3 style="font-family:Newsreader,serif;font-style:italic;">All caught up!</h3><p style="color:var(--text-light);font-size:13px;margin-top:6px;">No submissions waiting to be graded.</p></div></div>';
+      return;
+    }
+    container.innerHTML = subs.map(s => `
+      <div class="pending-card">
+        <div class="avatar">${s.avatar_initials || (s.student_first[0] + s.student_last[0])}</div>
+        <div class="pending-card-info">
+          <div class="pending-card-name">${s.student_first} ${s.student_last}</div>
+          <div class="pending-card-sub">${s.course_title || ''} · ${s.lesson_title || 'Submission'} · ${relativeTime(s.submitted_at)}</div>
+        </div>
+        ${s.file_path ? `<a href="${s.file_path}" target="_blank" class="btn btn-sm btn-outline" style="flex-shrink:0;">Download</a>` : ''}
+        <button class="btn btn-sm btn-primary" style="flex-shrink:0;" onclick="openGradeModal(${s.id}, '${s.student_first} ${s.student_last}', '${s.lesson_title || 'Submission'}')">Grade Now</button>
+      </div>
+    `).join('');
+  }
+
+  async function loadAllStudents() {
+    try {
+      const data = await api.get('/api/enrollments/instructor');
+      allStudentsData = data.students || [];
+      renderStudentsTable(allStudentsData);
+    } catch {
+      document.getElementById('students-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-light);">Could not load students.</td></tr>';
+    }
+  }
+
+  function renderStudentsTable(students) {
+    const tbody = document.getElementById('students-tbody');
+    if (!students.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-light);">No students found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = students.map(s => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="sidebar-avatar" style="width:32px;height:32px;font-size:12px;background:var(--crimson);">${s.avatar_initials || '??'}</div>
+            <div>
+              <div style="font-weight:600;font-size:13px;">${s.first_name} ${s.last_name}</div>
+              <div style="font-size:11px;color:var(--text-light);">${s.email}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:13px;">${s.course_title || '—'}</td>
+        <td style="font-size:13px;">${s.progress_pct || 0}%</td>
+        <td><span class="badge ${s.status_label === 'Excellent' ? 'badge-dark' : s.status_label === 'On Track' ? 'badge-green' : 'badge-crimson'}">${s.status_label || 'Student'}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function filterStudents() {
+    const q = document.getElementById('student-search').value.toLowerCase();
+    const filtered = allStudentsData.filter(s =>
+      `${s.first_name} ${s.last_name} ${s.email}`.toLowerCase().includes(q)
+    );
+    renderStudentsTable(filtered);
+  }
+
+  async function loadByCourse() {
+    try {
+      const data = await api.get('/api/submissions/instructor');
+      const subs = data.submissions || [];
+      const byCourse = {};
+      subs.forEach(s => {
+        const key = s.course_title || 'Uncategorised';
+        if (!byCourse[key]) byCourse[key] = [];
+        byCourse[key].push(s);
+      });
+      const container = document.getElementById('bycourse-content');
+      if (!Object.keys(byCourse).length) {
+        container.innerHTML = '<div class="card card-sm"><p style="color:var(--text-light);font-size:13px;">No pending submissions.</p></div>';
+        return;
+      }
+      container.innerHTML = Object.entries(byCourse).map(([course, items]) => `
+        <div class="course-section">
+          <div class="course-section-title"><span class="course-dot"></span>${course} <span class="badge badge-crimson">${items.length} pending</span></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Student</th><th>Assignment</th><th>Submitted</th><th></th></tr></thead>
+              <tbody>
+                ${items.map(s => `
+                  <tr>
+                    <td style="font-size:13px;font-weight:600;">${s.student_first} ${s.student_last}</td>
+                    <td style="font-size:13px;">${s.lesson_title || 'Assignment'}</td>
+                    <td style="font-size:12px;color:var(--text-light);">${formatDate(s.submitted_at)}</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="openGradeModal(${s.id}, '${s.student_first} ${s.student_last}', '${s.lesson_title || 'Assignment'}')">Grade</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      document.getElementById('bycourse-content').innerHTML = '<div class="card card-sm"><p style="color:var(--text-light);font-size:13px;">Could not load data.</p></div>';
+    }
+  }
+
+  function openGradeModal(id, studentName, assignmentName) {
+    document.getElementById('grade-sub-id').value = id;
+    document.getElementById('grade-sub-info').textContent = `${studentName} — ${assignmentName}`;
+    document.getElementById('grade-score').value = '';
+    document.getElementById('grade-feedback').value = '';
+    document.getElementById('grade-modal').style.display = 'flex';
+  }
+
+  async function submitGrade() {
+    const id = document.getElementById('grade-sub-id').value;
+    const score = document.getElementById('grade-score').value;
+    const feedback = document.getElementById('grade-feedback').value;
+    if (!score) { toast('Please enter a score', 'error'); return; }
+    try {
+      await api.put(`/api/submissions/${id}/grade`, { grade: score, feedback });
+      document.getElementById('grade-modal').style.display = 'none';
+      toast('Grade submitted!');
+      loadInstructorView();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  }
+</script>
+</body>
+</html>
