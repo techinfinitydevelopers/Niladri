@@ -55,9 +55,19 @@ app.use('/api/resources', require('./middleware/auth'), require('./routes/resour
 app.use('/api/email', require('./middleware/auth'), require('./routes/email.routes'));
 app.use('/api/roles', require('./middleware/auth'), require('./routes/roles.routes'));
 
-// SPA fallback — serve index.html for non-API routes
+// Root → marketing landing page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/home.html'));
+});
+
+// SPA fallback — serve home for non-API, non-file routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  const file = path.join(__dirname, '../public', req.path);
+  if (require('fs').existsSync(file)) {
+    res.sendFile(file);
+  } else {
+    res.sendFile(path.join(__dirname, '../public/home.html'));
+  }
 });
 
 // Error handler

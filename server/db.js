@@ -416,127 +416,221 @@ try {
 // Seed data only if tables are empty
 const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
 if (userCount.count === 0) {
-  const instructorHash = bcrypt.hashSync('password123', 10);
-  const studentHash = bcrypt.hashSync('password123', 10);
+  const hash = bcrypt.hashSync('password123', 10);
+  const adminHash = bcrypt.hashSync('admin@tfr2024', 10);
 
-  // Insert instructor
-  const instructorInsert = db.prepare(`
+  const userInsert = db.prepare(`
     INSERT INTO users (email, password_hash, first_name, last_name, role, instrument, avatar_initials, bio, verified)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const instructorResult = instructorInsert.run(
-    'instructor@archive.edu', instructorHash, 'Elias', 'Vance',
-    'instructor', 'Cello', 'EV',
-    'Professor Elias Vance has performed with the Berlin Philharmonic and taught at Juilliard for over two decades. His approach blends historical performance practice with modern technique.',
+
+  // ── Admin account ──
+  const admin = userInsert.run(
+    'admin@thefoundationroom.in', adminHash, 'TFR', 'Admin',
+    'admin', null, 'AD',
+    'Platform administrator for The Foundation Room.',
     1
   );
-  const instructorId = instructorResult.lastInsertRowid;
 
-  // Insert student
-  const studentResult = instructorInsert.run(
-    'student@archive.edu', studentHash, 'Julian', 'Weber',
-    'student', 'Cello', 'JW',
-    'Aspiring cellist with a passion for Romantic-era repertoire.',
+  // ── Demo student ──
+  const student = userInsert.run(
+    'student@thefoundationroom.in', hash, 'Arjun', 'Sharma',
+    'student', 'Sitar', 'AS',
+    'Passionate student of Hindustani classical music from Pune.',
     1
   );
-  const studentId = studentResult.lastInsertRowid;
+  const studentId = student.lastInsertRowid;
 
-  // Insert courses
+  // ── TFR Instructors ──
+  const niladri = userInsert.run('niladri@thefoundationroom.in', hash,
+    'Niladri', 'Kumar', 'instructor', 'Sitar', 'NK',
+    'Niladri Kumar is one of India\'s foremost sitar virtuosos, son of the legendary Pandit Kartick Kumar. A recipient of the National Film Award and countless accolades, he has redefined the sitar for a global audience while remaining deeply rooted in the Imdadkhani gharana tradition.',
+    1);
+
+  const taufiq = userInsert.run('taufiq@thefoundationroom.in', hash,
+    'Taufiq', 'Qureshi', 'instructor', 'Djembe & Percussions', 'TQ',
+    'Taufiq Qureshi is a rhythmic genius and the son of the iconic Ustad Alla Rakha. Brother of tabla maestro Zakir Hussain, Taufiq has pioneered the fusion of Indian classical percussion with world music, creating a unique rhythmic language that transcends boundaries.',
+    1);
+
+  const sveta = userInsert.run('sveta@thefoundationroom.in', hash,
+    'Sveta', 'Kilpady', 'instructor', 'Hindustani Vocals', 'SK',
+    'Sveta Kilpady is a celebrated Hindustani classical vocalist trained in the Kirana gharana. Her voice carries the rare combination of technical rigour and emotional depth, making her one of the most sought-after teachers of classical and semi-classical music.',
+    1);
+
+  const sangeeta = userInsert.run('sangeeta@thefoundationroom.in', hash,
+    'Guruma Sangeeta', 'Sinha', 'instructor', 'Kathak', 'GS',
+    'Guruma Sangeeta Sinha is a Kathak exponent of the Lucknow gharana, trained under the legendary Pandit Birju Maharaj. Her dance carries the grace, rhythm, and storytelling tradition of classical Kathak, and she has been teaching for over three decades.',
+    1);
+
+  const milind = userInsert.run('milind@thefoundationroom.in', hash,
+    'Milind', 'Singh', 'instructor', 'Film Songs', 'MS',
+    'Milind Singh is one of Bollywood\'s most prolific playback singers, with hundreds of songs spanning three decades of Hindi cinema. His rich baritone and effortless style have made him a favourite of composers and audiences alike.',
+    1);
+
+  const makarand = userInsert.run('makarand@thefoundationroom.in', hash,
+    'Makarand', 'Deshpande', 'instructor', 'Acting & Writing', 'MD',
+    'Makarand Deshpande is one of India\'s most celebrated playwright-actors, known for his intense, transformative approach to theatre and screen. His Writer\'s Room sessions are legendary — raw, unscripted, and deeply illuminating for anyone serious about storytelling.',
+    1);
+
+  // ── TFR Courses ──
   const courseInsert = db.prepare(`
     INSERT INTO courses (title, subtitle, description, instructor_id, instrument, level, category, cover_color, cover_accent, duration_weeks, lesson_count, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const course1 = courseInsert.run(
-    'Foundations of Classical Cello',
-    'Technique, Posture & Tone',
-    'A comprehensive introduction to classical cello technique covering proper posture, bow hold, left-hand position, and the production of a beautiful, resonant tone. Students will explore foundational exercises drawn from the great pedagogical traditions of the instrument.',
-    instructorId, 'Cello', 'Beginner', 'Classical', '#2D4F1E', '#D1A14E', 12, 24, 'active'
+    'Sitar — The Complete Foundation',
+    'From first notes to raga mastery',
+    'An immersive journey into the world of the sitar under Niladri Kumar\'s direct mentorship. Beginning with instrument anatomy, correct posture, and meend (glide) technique, students progress through foundational ragas in the Imdadkhani gharana tradition. Live sessions include real-time corrections, dedicated riyaz modules, and performance recordings reviewed by Niladri himself.',
+    niladri.lastInsertRowid, 'Sitar', 'Foundation', 'Sitar', '#1A0D00', '#C8A84B', 16, 32, 'active'
   );
 
   const course2 = courseInsert.run(
-    'Bach Cello Suites: A Complete Study',
-    'Six Suites for Solo Cello',
-    'An in-depth exploration of J.S. Bach\'s monumental six suites for solo cello. We examine historical context, performance practice, ornamentation, and the unique challenges each suite presents. This course is suitable for intermediate to advanced players.',
-    instructorId, 'Cello', 'Advanced', 'Baroque', '#8B2E26', '#F4EBD0', 24, 48, 'active'
+    'Djembe & World Percussions',
+    'Rhythm as a universal language',
+    'Taufiq Qureshi opens the world of rhythm in this extraordinary course blending Djembe, tabla bols, and world percussion traditions. Students learn polyrhythmic patterns, groove construction, and the meditative quality of deep listening. Suitable for complete beginners and practising musicians alike who want to awaken their inner rhythm.',
+    taufiq.lastInsertRowid, 'Djembe', 'Foundation', 'Percussion', '#001A08', '#C8A84B', 12, 24, 'active'
   );
 
   const course3 = courseInsert.run(
-    'Romantic Concerto Masterclass',
-    'Dvořák, Elgar & Schumann',
-    'Dive deep into the three cornerstone concertos of the Romantic cello repertoire. Learn the technical demands, interpretive choices, and historical context behind these beloved works.',
-    instructorId, 'Cello', 'Intermediate', 'Romantic', '#4A3728', '#D1A14E', 16, 32, 'active'
+    'Hindustani Vocals — Kirana Gharana',
+    'The science and art of the classical voice',
+    'Train your voice under Sveta Kilpady in the tradition of the Kirana gharana. This course covers sur (pitch), layakari (rhythm), raga grammar, and the art of khayal and thumri. Students receive personalized feedback on their practice recordings and participate in live group mehfils each month.',
+    sveta.lastInsertRowid, 'Vocals', 'Intermediate', 'Vocals', '#1A0014', '#C8A84B', 20, 40, 'active'
   );
 
   const course4 = courseInsert.run(
-    'Music Theory for String Players',
-    'Harmony, Counterpoint & Analysis',
-    'A practical theory course designed specifically for string players. Learn to analyze the scores you play, understand harmonic progressions, and develop your musical intuition through written exercises and ear training.',
-    instructorId, 'All Instruments', 'Beginner', 'Theory', '#1A3050', '#D1A14E', 8, 16, 'active'
+    'Kathak — Lucknow Gharana',
+    'Grace, rhythm and storytelling in motion',
+    'Guruma Sangeeta Sinha guides students through the graceful Lucknow style of Kathak — from foundational tatkar (footwork) and hastas (hand gestures) to full compositions and thumri abhinaya. Each module is structured around a thematic rasa, bringing together the technical and expressive dimensions of the dance.',
+    sangeeta.lastInsertRowid, 'Kathak', 'Foundation', 'Dance', '#001A1A', '#C8A84B', 24, 48, 'active'
   );
 
-  const courseIds = [course1.lastInsertRowid, course2.lastInsertRowid, course3.lastInsertRowid, course4.lastInsertRowid];
+  const course5 = courseInsert.run(
+    'Film Songs — The Playback Art',
+    'Singing for the camera and microphone',
+    'Milind Singh demystifies the world of Bollywood playback singing in this practical, studio-oriented course. Learn mic technique, breath control for recording, stylistic interpretation of film songs across eras, and how to prepare for studio sessions. Includes exclusive behind-the-scenes insights from three decades of Hindi film music.',
+    milind.lastInsertRowid, 'Vocals', 'Intermediate', 'Film Songs', '#1A1000', '#C8A84B', 12, 24, 'active'
+  );
 
-  // Insert chapters and lessons for course 1
+  const course6 = courseInsert.run(
+    'Writer\'s Room with Makarand Deshpande',
+    'Find your voice. Tell your truth.',
+    'Makarand Deshpande\'s Writer\'s Room is unlike any writing course you\'ve experienced. Part masterclass, part therapy, part performance — these live sessions push actors, writers and storytellers to excavate their deepest material and transform it into compelling work. Absolutely no prior writing experience required.',
+    makarand.lastInsertRowid, 'Writing', 'Foundation', 'Acting', '#0A0A1A', '#C8A84B', 10, 20, 'active'
+  );
+
+  const c1 = course1.lastInsertRowid;
+  const c2 = course2.lastInsertRowid;
+  const c3 = course3.lastInsertRowid;
+  const c4 = course4.lastInsertRowid;
+
+  // ── Chapters & Lessons: Sitar Foundation ──
   const chapterInsert = db.prepare(`INSERT INTO chapters (course_id, title, order_index, description) VALUES (?, ?, ?, ?)`);
   const lessonInsert = db.prepare(`INSERT INTO lessons (chapter_id, course_id, title, order_index, type, content_url, duration_minutes) VALUES (?, ?, ?, ?, ?, ?, ?)`);
 
-  const ch1 = chapterInsert.run(courseIds[0], 'Getting Started', 1, 'Introduction and setup');
-  lessonInsert.run(ch1.lastInsertRowid, courseIds[0], 'Welcome & Course Overview', 1, 'video', null, 8);
-  lessonInsert.run(ch1.lastInsertRowid, courseIds[0], 'The Anatomy of a Cello', 2, 'reading', null, 12);
-  lessonInsert.run(ch1.lastInsertRowid, courseIds[0], 'Setting Up Your Practice Space', 3, 'video', null, 10);
+  const s1 = chapterInsert.run(c1, 'Welcome to the Sitar', 1, 'Orientation, instrument anatomy and Niladri\'s philosophy');
+  lessonInsert.run(s1.lastInsertRowid, c1, 'Welcome from Niladri Kumar', 1, 'video', null, 10);
+  lessonInsert.run(s1.lastInsertRowid, c1, 'Anatomy of the Sitar', 2, 'reading', null, 15);
+  lessonInsert.run(s1.lastInsertRowid, c1, 'Setting Up Your Riyaz Space', 3, 'video', null, 12);
 
-  const ch2 = chapterInsert.run(courseIds[0], 'Posture & Position', 2, 'Body mechanics and ergonomics');
-  lessonInsert.run(ch2.lastInsertRowid, courseIds[0], 'Seated Posture Fundamentals', 1, 'video', null, 15);
-  lessonInsert.run(ch2.lastInsertRowid, courseIds[0], 'Cello Placement & End Pin Height', 2, 'video', null, 12);
-  lessonInsert.run(ch2.lastInsertRowid, courseIds[0], 'Posture Check Exercise', 3, 'exercise', null, 20);
+  const s2 = chapterInsert.run(c1, 'Posture & Right Hand (Mizrab)', 2, 'Correct sitting position and Da-Ra stroke technique');
+  lessonInsert.run(s2.lastInsertRowid, c1, 'Baithak: The Classical Sitting Posture', 1, 'video', null, 18);
+  lessonInsert.run(s2.lastInsertRowid, c1, 'The Mizrab: Wearing and Holding', 2, 'video', null, 14);
+  lessonInsert.run(s2.lastInsertRowid, c1, 'Da-Ra Strokes on Open String', 3, 'exercise', null, 25);
 
-  const ch3 = chapterInsert.run(courseIds[0], 'The Bow Arm', 3, 'Bow hold and technique');
-  lessonInsert.run(ch3.lastInsertRowid, courseIds[0], 'The Franco-Belgian Bow Hold', 1, 'video', null, 18);
-  lessonInsert.run(ch3.lastInsertRowid, courseIds[0], 'Open String Exercises', 2, 'exercise', null, 25);
+  const s3 = chapterInsert.run(c1, 'Left Hand & Meend', 3, 'Finger placement, fret navigation and the glide technique');
+  lessonInsert.run(s3.lastInsertRowid, c1, 'Left Hand Position & Finger Strength', 1, 'video', null, 20);
+  lessonInsert.run(s3.lastInsertRowid, c1, 'Meend: The Soul of the Sitar', 2, 'video', null, 30);
+  lessonInsert.run(s3.lastInsertRowid, c1, 'Meend Exercise — Sa to Ga', 3, 'exercise', null, 20);
 
-  // Insert chapters for course 2
-  const ch4 = chapterInsert.run(courseIds[1], 'Suite No. 1 in G Major', 1, 'Prelude through Gigue');
-  lessonInsert.run(ch4.lastInsertRowid, courseIds[1], 'Historical Context & Manuscripts', 1, 'reading', null, 20);
-  lessonInsert.run(ch4.lastInsertRowid, courseIds[1], 'Prelude: Structure & Performance', 2, 'video', null, 35);
-  lessonInsert.run(ch4.lastInsertRowid, courseIds[1], 'Allemande & Courante', 3, 'video', null, 40);
+  const s4 = chapterInsert.run(c1, 'Raga Yaman — Your First Raga', 4, 'Introduction to Kalyan thaat and Raga Yaman');
+  lessonInsert.run(s4.lastInsertRowid, c1, 'Raga Yaman: Grammar & Mood', 1, 'video', null, 25);
+  lessonInsert.run(s4.lastInsertRowid, c1, 'Alaap in Yaman — Purvang', 2, 'video', null, 35);
+  lessonInsert.run(s4.lastInsertRowid, c1, 'Alaap in Yaman — Uttarang', 3, 'video', null, 35);
+  lessonInsert.run(s4.lastInsertRowid, c1, 'Gat in Teentaal', 4, 'video', null, 40);
 
-  const ch5 = chapterInsert.run(courseIds[1], 'Suite No. 2 in D Minor', 2, 'The melancholic second suite');
-  lessonInsert.run(ch5.lastInsertRowid, courseIds[1], 'Prelude: D Minor Tonality', 1, 'video', null, 30);
-  lessonInsert.run(ch5.lastInsertRowid, courseIds[1], 'Sarabande: Ornamentation', 2, 'video', null, 35);
+  // ── Chapters & Lessons: Djembe & World Percussions ──
+  const d1 = chapterInsert.run(c2, 'The World of Rhythm', 1, 'Taufiq\'s philosophy, percussion families and listening practice');
+  lessonInsert.run(d1.lastInsertRowid, c2, 'Welcome: Why Rhythm Heals', 1, 'video', null, 12);
+  lessonInsert.run(d1.lastInsertRowid, c2, 'The Djembe: History & Construction', 2, 'reading', null, 15);
+  lessonInsert.run(d1.lastInsertRowid, c2, 'Active Listening: Rhythms of the World', 3, 'video', null, 20);
 
-  // Enrollments
+  const d2 = chapterInsert.run(c2, 'Djembe Fundamentals', 2, 'Bass, tone, slap and hand technique');
+  lessonInsert.run(d2.lastInsertRowid, c2, 'Holding & Sitting Position', 1, 'video', null, 14);
+  lessonInsert.run(d2.lastInsertRowid, c2, 'The Three Core Sounds: Bass, Tone, Slap', 2, 'video', null, 30);
+  lessonInsert.run(d2.lastInsertRowid, c2, 'Alternating Hands Exercise', 3, 'exercise', null, 25);
+
+  const d3 = chapterInsert.run(c2, 'Indian Rhythm — Taal & Bols', 3, 'Tabla bols, Teentaal and Dadra applied to hand percussion');
+  lessonInsert.run(d3.lastInsertRowid, c2, 'Understanding Taal: The Indian Time Cycle', 1, 'video', null, 22);
+  lessonInsert.run(d3.lastInsertRowid, c2, 'Teentaal on Djembe', 2, 'video', null, 28);
+  lessonInsert.run(d3.lastInsertRowid, c2, 'Polyrhythm: 3 Against 4', 3, 'exercise', null, 30);
+
+  // ── Enrollments: demo student in Sitar + Djembe ──
   const enrollInsert = db.prepare(`INSERT OR IGNORE INTO enrollments (student_id, course_id, progress_pct, last_accessed_at) VALUES (?, ?, ?, datetime('now'))`);
-  enrollInsert.run(studentId, courseIds[0], 70);
-  enrollInsert.run(studentId, courseIds[1], 32);
+  enrollInsert.run(studentId, c1, 65);
+  enrollInsert.run(studentId, c2, 28);
 
-  // Sheet music
+  // ── Sheet Music (TFR-relevant) ──
   const sheetInsert = db.prepare(`INSERT INTO sheet_music (title, composer, period, instrument, difficulty, page_count, uploaded_by, course_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
-  sheetInsert.run('Suite No. 1 in G Major, BWV 1007', 'Johann Sebastian Bach', 'Baroque', 'Cello', 'Intermediate', 12, instructorId, courseIds[1]);
-  sheetInsert.run('Cello Concerto in E minor, Op. 85', 'Edward Elgar', 'Romantic', 'Cello', 'Advanced', 48, instructorId, courseIds[2]);
-  sheetInsert.run('Cello Concerto in B minor, Op. 104', 'Antonín Dvořák', 'Romantic', 'Cello', 'Advanced', 52, instructorId, courseIds[2]);
-  sheetInsert.run('The Well-Tempered Clavier, Book I', 'Johann Sebastian Bach', 'Baroque', 'All Instruments', 'Intermediate', 96, instructorId, null);
+  sheetInsert.run('Raga Yaman — Alaap & Gat Notation', 'Niladri Kumar', 'Contemporary', 'Sitar', 'Foundation', 8, niladri.lastInsertRowid, c1);
+  sheetInsert.run('Raga Bhairav — Morning Raga Notations', 'Traditional (Imdadkhani Gharana)', 'Classical', 'Sitar', 'Intermediate', 12, niladri.lastInsertRowid, c1);
+  sheetInsert.run('Dadra Taal — Hand Percussion Chart', 'Taufiq Qureshi', 'Contemporary', 'Percussion', 'Foundation', 4, taufiq.lastInsertRowid, c2);
+  sheetInsert.run('Teentaal Compositions — Djembe Notation', 'Taufiq Qureshi', 'Contemporary', 'Percussion', 'Intermediate', 6, taufiq.lastInsertRowid, c2);
+  sheetInsert.run('Raag Darbari Kanada — Bandish Notation', 'Traditional (Kirana Gharana)', 'Classical', 'Vocals', 'Intermediate', 10, sveta.lastInsertRowid, c3);
+  sheetInsert.run('Teentaal Thumri — Notation & Lyrics', 'Traditional', 'Classical', 'Vocals', 'Advanced', 8, sveta.lastInsertRowid, c3);
 
-  // Masterclasses
+  // ── Masterclasses ──
   const mcInsert = db.prepare(`INSERT INTO masterclasses (title, instructor_id, scheduled_at, duration_minutes, location, meeting_url, max_participants, description, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-  mcInsert.run('Bach Suite Interpretation: Finding Your Voice', instructorId, '2026-05-03 14:00:00', 90, 'Online via Zoom', 'https://zoom.us/j/archive001', 20, 'An open masterclass on interpreting the Bach Cello Suites. Participants are welcome to submit short recordings for feedback.', 'upcoming');
-  mcInsert.run('The Art of the Bow: Tone Production Masterclass', instructorId, '2026-05-17 15:00:00', 120, 'The Archive Studio, Room 4', null, 15, 'Hands-on masterclass focusing on bow technique, tone colour, and expressive playing across all levels.', 'upcoming');
-  mcInsert.run('Romantic Concerto Session: Dvořák', instructorId, '2026-06-07 13:00:00', 90, 'Online via Zoom', 'https://zoom.us/j/archive002', 25, 'Deep dive into the Dvořák Cello Concerto. We will cover technical challenges and interpretive decisions in the first movement.', 'upcoming');
+  mcInsert.run(
+    'Raga Grammar: Unlocking the Language of Indian Music',
+    niladri.lastInsertRowid, '2026-05-10 16:00:00', 90,
+    'Online via Zoom', 'https://zoom.us/j/tfr-niladri-001', 25,
+    'Niladri Kumar opens the deep grammar of Indian ragas — how each raga has its own personality, time of day, season, and emotional world. Students may submit short sitar or vocal recordings for live feedback.',
+    'upcoming'
+  );
+  mcInsert.run(
+    'The Rhythm Within: Discovering Your Inner Pulse',
+    taufiq.lastInsertRowid, '2026-05-24 17:00:00', 120,
+    'Online via Zoom', 'https://zoom.us/j/tfr-taufiq-001', 30,
+    'A transformative session with Taufiq Qureshi on rhythm as a meditative practice. We will explore polyrhythms, silence, and the space between beats. No instrument required — just your hands and an open mind.',
+    'upcoming'
+  );
+  mcInsert.run(
+    'Sur Sadhana: The Daily Practice of the Classical Voice',
+    sveta.lastInsertRowid, '2026-06-14 10:00:00', 90,
+    'The Foundation Room Studio, Mumbai', null, 20,
+    'Sveta Kilpady shares her daily sadhana practice — the riyaz routines, swara exercises, and meditative approach to maintaining and deepening the classical voice over decades. Open Q&A included.',
+    'upcoming'
+  );
+  mcInsert.run(
+    'Kathak Abhinaya: The Art of Expression',
+    sangeeta.lastInsertRowid, '2026-07-05 15:00:00', 90,
+    'Online via Zoom', 'https://zoom.us/j/tfr-sangeeta-001', 20,
+    'Guruma Sangeeta Sinha explores the expressive dimension of Kathak — how a single gesture (mudra) can tell an entire story. This masterclass covers abhinaya, nava rasa, and the poetry behind the movement.',
+    'upcoming'
+  );
 
-  // Quotes
+  // ── Quotes (Indian classical music & arts) ──
   const quoteInsert = db.prepare(`INSERT INTO quotes (text, attribution) VALUES (?, ?)`);
-  quoteInsert.run('Music is the shorthand of emotion.', 'Leo Tolstoy');
+  quoteInsert.run('Music is the medicine of the mind.', 'John A. Logan');
+  quoteInsert.run('Nada Brahma — Sound is God. The universe is vibration.', 'Ancient Vedic Teaching');
   quoteInsert.run('Without music, life would be a mistake.', 'Friedrich Nietzsche');
+  quoteInsert.run('The sitar speaks what words cannot. It reaches where language ends.', 'Pandit Ravi Shankar');
+  quoteInsert.run('Rhythm is the soul of life. The whole universe revolves in rhythm. Everything and every human action revolves in rhythm.', 'Babatunde Olatunji');
   quoteInsert.run('Music gives a soul to the universe, wings to the mind, flight to the imagination, and life to everything.', 'Plato');
+  quoteInsert.run('To play without passion is inexcusable.', 'Ludwig van Beethoven');
+  quoteInsert.run('A raga is not a scale, not a mode, but the quintessence of a melody.', 'Pandit Vishnu Narayan Bhatkhande');
+  quoteInsert.run('The dancer\'s body is simply the luminous manifestation of the soul.', 'Isadora Duncan');
   quoteInsert.run('One good thing about music: when it hits you, you feel no pain.', 'Bob Marley');
-  quoteInsert.run('Music is the divine way to tell beautiful, poetic things to the heart.', 'Pablo Casals');
-  quoteInsert.run('The cello is like a beautiful woman who has not grown older, but younger with time, more slender, more supple, more graceful.', 'Pablo Casals');
-  quoteInsert.run('To play a wrong note is insignificant; to play without passion is inexcusable.', 'Ludwig van Beethoven');
-  quoteInsert.run('Music is the mediator between the spiritual and the sensual life.', 'Ludwig van Beethoven');
-  quoteInsert.run('Bach is an astronomer, discovering the most marvellous stars. Beethoven challenges the universe. I only try to express the soul and the heart of man.', 'Frédéric Chopin');
-  quoteInsert.run('The aim and final end of all music should be none other than the glory of God and the refreshment of the soul.', 'Johann Sebastian Bach');
+  quoteInsert.run('Sur, laya, taal — pitch, tempo, rhythm. Master these three and music will speak through you.', 'Ustad Bismillah Khan');
+  quoteInsert.run('Every raga is a universe. Learning one properly takes a lifetime. And it is worth every moment.', 'Niladri Kumar');
 
-  console.log('Database seeded successfully.');
+  // ── App config row ──
+  db.prepare(`INSERT OR IGNORE INTO app_config (id, s3_config, smtp_config, general_config) VALUES (1, '{}', '{}', '{"school_name":"The Foundation Room","tagline":"Where Music Begins"}')`)
+    .run();
+
+  console.log('✅ The Foundation Room database seeded successfully.');
 }
 
 module.exports = db;
