@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Library — The Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/archive.css">
+  <style>
+    .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 22px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">The Archive</div>
+      <div class="brand-sub">Music School</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/student-dashboard.html" class="nav-item" id="nav-dash">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a href="/course-catalog.html" class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Library
+      </a>
+      <a href="/my-lessons.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        My Lessons
+      </a>
+      <a href="/sheet-music.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Sheet Music
+      </a>
+      <a href="/studio.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Studio
+      </a>
+      <a href="/archive-browse.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+        Archive
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="handleLogout()">
+        <div class="sidebar-avatar" id="sb-avatar">?</div>
+        <div class="sidebar-user-info">
+          <div class="user-name" id="sb-name">Loading…</div>
+          <div class="user-role" id="sb-role">student</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-title">Course Library</div>
+      <div class="topbar-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search courses…" id="search-input">
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="badge-dot"></span></button>
+        <div class="topbar-avatar" id="topbar-avatar">?</div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="page-title">The Volumes</div>
+      <p class="page-subtitle">All courses, masterworks, and study archives.</p>
+
+      <!-- Filter bar -->
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" data-filter="all" onclick="setFilter('all', this)">All Volumes</button>
+        <button class="filter-chip" data-filter="Classical" onclick="setFilter('Classical', this)">Classical</button>
+        <button class="filter-chip" data-filter="Baroque" onclick="setFilter('Baroque', this)">Baroque</button>
+        <button class="filter-chip" data-filter="Romantic" onclick="setFilter('Romantic', this)">Romantic</button>
+        <button class="filter-chip" data-filter="Theory" onclick="setFilter('Theory', this)">Theory</button>
+        <button class="filter-chip" data-filter="Jazz" onclick="setFilter('Jazz', this)">Jazz Theory</button>
+        <button class="filter-chip" data-filter="Contemporary" onclick="setFilter('Contemporary', this)">Contemporary</button>
+        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+          <select class="form-select" id="level-filter" style="width:auto; padding:7px 12px; font-size:13px;" onchange="loadCourses()">
+            <option value="">All Levels</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <div class="courses-grid" id="courses-grid">
+        <!-- Loading skeletons -->
+        ${Array(6).fill(0).map(() => '<div class="card skeleton" style="height:300px; border-radius:var(--radius-lg);"></div>').join('')}
+      </div>
+
+      <!-- Pagination -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:36px;" id="pagination"></div>
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script>
+  let currentFilter = 'all';
+  let currentUser = null;
+  let enrolledCourseIds = new Set();
+
+  function toast(msg, type = 'success') {
+    const tc = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type === 'error' ? 'error' : ''}`;
+    t.textContent = msg;
+    tc.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('archive_token');
+    localStorage.removeItem('archive_user');
+    window.location.href = '/index.html';
+  }
+
+  document.addEventListener('userLoaded', (e) => {
+    const user = e.detail;
+    currentUser = user;
+    document.getElementById('sb-avatar').textContent = user.avatar_initials || '?';
+    document.getElementById('sb-name').textContent = user.first_name + ' ' + user.last_name;
+    document.getElementById('sb-role').textContent = user.role;
+    document.getElementById('topbar-avatar').textContent = user.avatar_initials || '?';
+    document.getElementById('nav-dash').href = user.role === 'instructor' ? '/instructor-dashboard.html' : '/student-dashboard.html';
+
+    // Check URL params
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('search')) document.getElementById('search-input').value = params.get('search');
+
+    // Load enrollments first
+    if (user.role === 'student') {
+      api.get('/api/enrollments/me').then(d => {
+        (d.enrollments || []).forEach(e => enrolledCourseIds.add(e.course_id));
+        loadCourses();
+      }).catch(() => loadCourses());
+    } else {
+      loadCourses();
+    }
+  });
+
+  function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    loadCourses();
+  }
+
+  async function loadCourses() {
+    const grid = document.getElementById('courses-grid');
+    grid.innerHTML = Array(6).fill(0).map(() => '<div class="card skeleton" style="height:300px; border-radius:var(--radius-lg);"></div>').join('');
+    try {
+      const params = new URLSearchParams();
+      if (currentFilter !== 'all') params.set('category', currentFilter);
+      const level = document.getElementById('level-filter').value;
+      if (level) params.set('level', level);
+      const search = document.getElementById('search-input').value;
+      if (search) params.set('search', search);
+
+      const data = await api.get('/api/courses?' + params.toString());
+      renderCourses(data.courses || []);
+    } catch (e) {
+      grid.innerHTML = '<div class="empty-state" style="color:var(--parchment); grid-column:1/-1;"><h3>Could not load courses</h3><p>' + e.message + '</p></div>';
+    }
+  }
+
+  function renderCourses(courses) {
+    const grid = document.getElementById('courses-grid');
+    if (!courses.length) {
+      grid.innerHTML = '<div class="empty-state" style="color:var(--parchment); grid-column:1/-1;"><div class="empty-icon">📚</div><h3>No courses found</h3><p>Try adjusting your filters.</p></div>';
+      return;
+    }
+    grid.innerHTML = courses.map(c => {
+      const isEnrolled = enrolledCourseIds.has(c.id);
+      return `
+        <div class="book-card" onclick="window.location.href='/course-detail.html?id=${c.id}'">
+          <div class="book-cover" style="background:${c.cover_color || '#2D4F1E'};">
+            <div class="book-cover-overlay"></div>
+            <div class="book-cover-content">
+              <div class="book-title">${c.title}</div>
+              <div class="book-author">${c.instructor_name || 'Instructor'}</div>
+            </div>
+          </div>
+          <div class="book-body">
+            <div class="book-meta">
+              <span class="badge ${c.level === 'Beginner' ? 'badge-green' : c.level === 'Advanced' ? 'badge-crimson' : 'badge-gold'}">${c.level || 'All Levels'}</span>
+              <span class="badge badge-gray">${c.category || 'General'}</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-light);">
+              ${c.lesson_count || 0} lessons · ${c.duration_weeks || '?'} weeks
+            </div>
+            <div style="display:flex; gap:8px; margin-top:4px;">
+              <a href="/course-detail.html?id=${c.id}" class="btn btn-outline btn-sm" style="flex:1; justify-content:center;" onclick="event.stopPropagation()">View Archive</a>
+              ${currentUser?.role === 'student' && !isEnrolled ? `<button class="btn btn-green btn-sm" onclick="event.stopPropagation(); enrollCourse(${c.id}, this)">Enroll</button>` : ''}
+              ${isEnrolled ? '<span class="badge badge-dark" style="padding:6px 12px; font-size:11px;">Enrolled ✓</span>' : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function enrollCourse(id, btn) {
+    try {
+      await api.post('/api/enrollments', { course_id: id });
+      enrolledCourseIds.add(id);
+      btn.textContent = 'Enrolled ✓';
+      btn.className = 'badge badge-dark';
+      btn.disabled = true;
+      toast('Enrolled successfully!');
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  }
+
+  // Search on Enter
+  document.getElementById('search-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loadCourses();
+  });
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(window._searchTimer);
+    window._searchTimer = setTimeout(loadCourses, 400);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course — The Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/archive.css">
+  <style>
+    .course-hero {
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .course-hero-content { position: relative; z-index: 1; flex: 1; }
+    .course-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 20%, rgba(0,0,0,0.55) 100%); }
+    .course-hero-side { position: relative; z-index: 1; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+    .progress-ring-svg circle { transition: stroke-dashoffset 0.6s ease; transform-origin: 50% 50%; transform: rotate(-90deg); }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">The Archive</div>
+      <div class="brand-sub">Music School</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/student-dashboard.html" class="nav-item" id="nav-dash">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a href="/course-catalog.html" class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Library
+      </a>
+      <a href="/my-lessons.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        My Lessons
+      </a>
+      <a href="/sheet-music.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Sheet Music
+      </a>
+      <a href="/studio.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Studio
+      </a>
+      <a href="/archive-browse.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+        Archive
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="handleLogout()">
+        <div class="sidebar-avatar" id="sb-avatar">?</div>
+        <div class="sidebar-user-info">
+          <div class="user-name" id="sb-name">Loading…</div>
+          <div class="user-role" id="sb-role">student</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Course Detail</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="history.back()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="topbar-avatar" id="topbar-avatar">?</div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div id="course-skeleton" style="display:block;">
+        <div class="card skeleton" style="height:220px; margin-bottom:28px;"></div>
+        <div class="card skeleton" style="height:400px;"></div>
+      </div>
+      <div id="course-content" style="display:none;">
+        <!-- Hero -->
+        <div class="course-hero" id="course-hero">
+          <div class="course-hero-overlay"></div>
+          <div class="course-hero-content">
+            <div id="course-badges" style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;"></div>
+            <h1 style="font-family:'Newsreader',serif; font-style:italic; font-size:30px; font-weight:600; color:#fff; margin-bottom:6px;" id="hero-title">Course Title</h1>
+            <p style="font-size:14px; color:rgba(255,255,255,0.75); margin-bottom:16px;" id="hero-subtitle"></p>
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div class="sidebar-avatar" id="hero-instructor-avatar" style="width:32px; height:32px; font-size:12px; background:rgba(255,255,255,0.2);">?</div>
+                <span style="font-size:13px; color:rgba(255,255,255,0.85);" id="hero-instructor-name">Instructor</span>
+              </div>
+              <span style="font-size:12px; color:rgba(255,255,255,0.55);" id="hero-meta"></span>
+            </div>
+          </div>
+          <div class="course-hero-side" style="margin-left:24px;">
+            <!-- Progress ring for enrolled students -->
+            <div id="progress-ring-wrap" style="display:none;">
+              <div class="progress-ring-wrap">
+                <svg width="100" height="100" class="progress-ring-svg">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="8"/>
+                  <circle id="ring-fill" cx="50" cy="50" r="40" fill="none" stroke="#D1A14E" stroke-width="8"
+                    stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"/>
+                </svg>
+                <div class="progress-ring-label" style="color:#fff;">
+                  <span id="ring-pct">0%</span>
+                  <small style="color:rgba(255,255,255,0.6);">progress</small>
+                </div>
+              </div>
+            </div>
+            <!-- Enroll button for non-enrolled -->
+            <div id="enroll-wrap">
+              <button class="btn btn-lg" id="enroll-btn" style="background:var(--parchment); color:var(--crimson); font-weight:700; white-space:nowrap;" onclick="enrollCourse()">
+                Enroll Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two column -->
+        <div style="display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start;">
+          <div>
+            <!-- Description -->
+            <div class="card mb-24">
+              <div class="card-label">About This Course</div>
+              <p style="font-size:14px; color:var(--text-mid); line-height:1.7;" id="course-desc"></p>
+            </div>
+
+            <!-- Chapters accordion -->
+            <div>
+              <div class="section-header mb-16">
+                <div class="section-title" style="color:var(--parchment);">Course Content</div>
+                <span id="lesson-count-label" style="font-size:13px; color:rgba(244,235,208,0.55);"></span>
+              </div>
+              <div id="chapters-list">
+                <div class="card skeleton" style="height:60px; margin-bottom:8px;"></div>
+                <div class="card skeleton" style="height:60px; margin-bottom:8px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: instructor info + related sheet music -->
+          <div>
+            <div class="card mb-20">
+              <div class="card-label">Your Instructor</div>
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                <div class="sidebar-avatar" id="instructor-avatar-card" style="width:44px; height:44px; font-size:15px; flex-shrink:0; background:var(--forest);">?</div>
+                <div>
+                  <div style="font-weight:700; font-size:15px;" id="instructor-name-card">—</div>
+                  <div style="font-size:12px; color:var(--text-light);" id="instructor-inst">—</div>
+                </div>
+              </div>
+              <p style="font-size:13px; color:var(--text-mid); line-height:1.6;" id="instructor-bio">—</p>
+            </div>
+
+            <div class="card" id="related-sheet-music-wrap">
+              <div class="card-label mb-12">Related Sheet Music</div>
+              <div id="related-sheets"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script>
+  let courseId = null;
+  let isEnrolled = false;
+  let enrollmentProgress = 0;
+  let currentUser = null;
+
+  function toast(msg, type = 'success') {
+    const tc = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type === 'error' ? 'error' : ''}`;
+    t.textContent = msg;
+    tc.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('archive_token');
+    localStorage.removeItem('archive_user');
+    window.location.href = '/index.html';
+  }
+
+  document.addEventListener('userLoaded', async (e) => {
+    const user = e.detail;
+    currentUser = user;
+    document.getElementById('sb-avatar').textContent = user.avatar_initials || '?';
+    document.getElementById('sb-name').textContent = user.first_name + ' ' + user.last_name;
+    document.getElementById('sb-role').textContent = user.role;
+    document.getElementById('topbar-avatar').textContent = user.avatar_initials || '?';
+    document.getElementById('nav-dash').href = user.role === 'instructor' ? '/instructor-dashboard.html' : '/student-dashboard.html';
+
+    courseId = new URLSearchParams(window.location.search).get('id');
+    if (!courseId) { window.location.href = '/course-catalog.html'; return; }
+
+    loadCourse();
+  });
+
+  async function loadCourse() {
+    try {
+      const [courseData, chaptersData, enrollData] = await Promise.all([
+        api.get(`/api/courses/${courseId}`),
+        api.get(`/api/courses/${courseId}/chapters`),
+        api.get('/api/enrollments/me').catch(() => ({ enrollments: [] }))
+      ]);
+
+      const course = courseData.course;
+      const chapters = chaptersData.chapters || [];
+      const enrollments = enrollData.enrollments || [];
+      const enrollment = enrollments.find(e => e.course_id == courseId);
+      isEnrolled = !!enrollment;
+      enrollmentProgress = enrollment ? enrollment.progress_pct : 0;
+
+      renderCourse(course, chapters);
+    } catch (err) {
+      document.getElementById('course-skeleton').innerHTML = `<div class="card"><p style="padding:20px; color:var(--text-light);">${err.message}</p></div>`;
+    }
+  }
+
+  function renderCourse(course, chapters) {
+    document.getElementById('course-skeleton').style.display = 'none';
+    document.getElementById('course-content').style.display = 'block';
+    document.title = course.title + ' — The Archive';
+    document.getElementById('topbar-title').textContent = course.title;
+
+    // Hero
+    const hero = document.getElementById('course-hero');
+    hero.style.background = course.cover_color || '#2D4F1E';
+    document.getElementById('hero-title').textContent = course.title;
+    document.getElementById('hero-subtitle').textContent = course.subtitle || '';
+    const initials = (course.instructor_name || 'Instructor').split(' ').map(n => n[0]).join('').slice(0, 2);
+    document.getElementById('hero-instructor-avatar').textContent = initials;
+    document.getElementById('hero-instructor-name').textContent = course.instructor_name || 'Instructor';
+    document.getElementById('hero-meta').textContent = `${course.lesson_count || 0} lessons · ${course.duration_weeks || '?'} weeks · ${course.instrument || 'All instruments'}`;
+
+    // Badges
+    document.getElementById('course-badges').innerHTML = `
+      <span class="badge" style="background:rgba(255,255,255,0.20); color:#fff;">${course.level || 'All Levels'}</span>
+      <span class="badge" style="background:rgba(255,255,255,0.15); color:#fff;">${course.category || 'General'}</span>
+      <span class="badge" style="background:rgba(255,255,255,0.15); color:#fff;">${course.status || 'active'}</span>
+    `;
+
+    // Enroll/Progress
+    if (isEnrolled) {
+      document.getElementById('enroll-wrap').style.display = 'none';
+      const ringWrap = document.getElementById('progress-ring-wrap');
+      ringWrap.style.display = 'block';
+      document.getElementById('ring-pct').textContent = enrollmentProgress + '%';
+      const circumference = 251.2;
+      const offset = circumference - (enrollmentProgress / 100) * circumference;
+      document.getElementById('ring-fill').style.strokeDashoffset = offset;
+    } else if (currentUser?.role === 'instructor') {
+      document.getElementById('enroll-wrap').style.display = 'none';
+    }
+
+    // Description
+    document.getElementById('course-desc').textContent = course.description || 'No description available.';
+
+    // Instructor
+    document.getElementById('instructor-name-card').textContent = course.instructor_name || '—';
+    document.getElementById('instructor-inst').textContent = course.instrument || '';
+    document.getElementById('instructor-avatar-card').textContent = initials;
+    document.getElementById('instructor-bio').textContent = course.instructor_bio || 'No bio available.';
+
+    // Lesson count
+    const totalLessons = chapters.reduce((s, ch) => s + (ch.lessons?.length || 0), 0);
+    document.getElementById('lesson-count-label').textContent = `${chapters.length} chapters · ${totalLessons} lessons`;
+
+    // Chapters accordion
+    renderChapters(chapters);
+
+    // Related sheet music
+    loadRelatedSheetMusic(courseId);
+  }
+
+  function renderChapters(chapters) {
+    const list = document.getElementById('chapters-list');
+    if (!chapters.length) {
+      list.innerHTML = '<div class="card card-sm"><p style="font-size:13px; color:var(--text-light);">No content available yet.</p></div>';
+      return;
+    }
+    list.innerHTML = chapters.map(ch => `
+      <div class="accordion-item" style="margin-bottom:10px;">
+        <div class="accordion-header" onclick="toggleChapter(this)">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:28px; height:28px; background:var(--crimson); color:var(--parchment); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">${ch.order_index}</div>
+            <div>
+              <div style="font-weight:600; font-size:14px; color:var(--text-dark);">${ch.title}</div>
+              <div style="font-size:12px; color:var(--text-light); margin-top:1px;">${(ch.lessons || []).length} lessons</div>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="accordion-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-body">
+          ${(ch.lessons || []).map(l => `
+            <div class="lesson-row">
+              <div class="lesson-check ${l.completed ? 'done' : ''}" id="check-cd-${l.id}" onclick="completeLesson(${l.id})">
+                ${l.completed ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+              </div>
+              <div class="lesson-type-icon type-${l.type}">${l.type === 'video' ? '▶' : l.type === 'reading' ? '📄' : l.type === 'exercise' ? '🎵' : '❓'}</div>
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600; color:var(--text-dark);">${l.title}</div>
+                <div style="font-size:11px; color:var(--text-light); margin-top:1px;">${l.duration_minutes ? l.duration_minutes + ' min' : ''}</div>
+              </div>
+              <span class="badge ${l.type === 'video' ? 'badge-crimson' : l.type === 'reading' ? 'badge-green' : 'badge-gold'}">${l.type}</span>
+            </div>
+          `).join('')}
+          ${!(ch.lessons || []).length ? '<div style="padding:12px 18px; font-size:13px; color:var(--text-light);">No lessons in this chapter yet.</div>' : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function toggleChapter(header) {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+  }
+
+  async function completeLesson(lessonId) {
+    if (!isEnrolled) { toast('Enroll in the course first', 'error'); return; }
+    const el = document.getElementById(`check-cd-${lessonId}`);
+    if (el && el.classList.contains('done')) return;
+    try {
+      const data = await api.post(`/api/lessons/${lessonId}/complete`, {});
+      if (el) {
+        el.classList.add('done');
+        el.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+      }
+      enrollmentProgress = data.progress_pct || enrollmentProgress;
+      document.getElementById('ring-pct').textContent = enrollmentProgress + '%';
+      const offset = 251.2 - (enrollmentProgress / 100) * 251.2;
+      document.getElementById('ring-fill').style.strokeDashoffset = offset;
+      toast(`Progress: ${enrollmentProgress}%`);
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  }
+
+  async function enrollCourse() {
+    const btn = document.getElementById('enroll-btn');
+    btn.disabled = true;
+    btn.textContent = 'Enrolling…';
+    try {
+      await api.post('/api/enrollments', { course_id: courseId });
+      isEnrolled = true;
+      btn.textContent = 'Enrolled ✓';
+      document.getElementById('progress-ring-wrap').style.display = 'block';
+      document.getElementById('ring-pct').textContent = '0%';
+      toast('You are now enrolled!');
+    } catch (err) {
+      toast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Enroll Now';
+    }
+  }
+
+  async function loadRelatedSheetMusic(courseId) {
+    try {
+      const data = await api.get(`/api/sheet-music?course_id=${courseId}`);
+      const sheets = (data.items || []).slice(0, 4);
+      const wrap = document.getElementById('related-sheet-music-wrap');
+      const cont = document.getElementById('related-sheets');
+      if (!sheets.length) { wrap.style.display = 'none'; return; }
+      cont.innerHTML = sheets.map(s => `
+        <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border);">
+          <div style="width:32px; height:32px; background:rgba(45,79,30,0.10); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--forest); flex-shrink:0;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.title}</div>
+            <div style="font-size:11px; color:var(--text-light);">${s.composer || ''}</div>
+          </div>
+          <span class="badge badge-gray" style="font-size:10px;">PDF</span>
+        </div>
+      `).join('');
+    } catch (e) {
+      document.getElementById('related-sheet-music-wrap').style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>
