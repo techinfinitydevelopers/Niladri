@@ -16,6 +16,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ── Root & login routes (declared BEFORE express.static so they
+//    take precedence over public/index.html being auto-served for /)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/home.html'));
+});
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 // Static files
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(path.join(__dirname, '../data/uploads')));
@@ -54,11 +66,6 @@ app.use('/api/announcements', require('./middleware/auth'), require('./routes/an
 app.use('/api/resources', require('./middleware/auth'), require('./routes/resources.routes'));
 app.use('/api/email', require('./middleware/auth'), require('./routes/email.routes'));
 app.use('/api/roles', require('./middleware/auth'), require('./routes/roles.routes'));
-
-// Root → marketing landing page
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/home.html'));
-});
 
 // SPA fallback — serve home for non-API, non-file routes
 app.get('*', (req, res) => {
