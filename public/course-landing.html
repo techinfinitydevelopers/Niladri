@@ -376,7 +376,11 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script>
+gsap.registerPlugin(ScrollTrigger);
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
 function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
 function el(tag, cls, html) {
@@ -707,7 +711,53 @@ async function renderPage(data) {
 
   document.getElementById('app').innerHTML = html;
 
-  // Reveal on scroll
+  // ─── GSAP Animations after render ───
+  // Hero title words stagger
+  const heroTitle = document.querySelector('.hero-title');
+  if (heroTitle) {
+    const words = heroTitle.innerHTML.split(' ');
+    heroTitle.innerHTML = words.map(w => `<span style="display:inline-block; will-change:transform;">${w}</span>`).join(' ');
+    gsap.from(heroTitle.querySelectorAll('span'), {
+      opacity: 0, y: 30, duration: 0.55, stagger: 0.07, ease: 'power3.out', delay: 0.2
+    });
+  }
+
+  // Hero eyebrow, subtitle
+  gsap.from('.hero-eyebrow', { opacity: 0, y: 16, duration: 0.45, ease: 'power3.out', delay: 0.1 });
+  gsap.from('.hero-subtitle', { opacity: 0, y: 16, duration: 0.45, ease: 'power3.out', delay: 0.5 });
+
+  // Hero stats count-up
+  document.querySelectorAll('.hero-stat-val').forEach(el => {
+    const raw = parseFloat(el.textContent.replace(/[^0-9.]/g, ''));
+    if (!isNaN(raw) && raw > 0) {
+      const prefix = el.textContent.includes('₹') ? '₹' : '';
+      const suffix = el.textContent.replace(/[0-9.,₹]/g, '');
+      const obj = { v: 0 };
+      gsap.to(obj, {
+        v: raw, duration: 1.6, ease: 'power2.out', delay: 0.6,
+        onUpdate: () => { el.textContent = prefix + Math.round(obj.v) + suffix; }
+      });
+    }
+  });
+
+  // Enroll button pulse
+  const enrollBtns = document.querySelectorAll('.btn-enroll-big, .btn-enroll-bottom');
+  enrollBtns.forEach(btn => {
+    gsap.to(btn, {
+      scale: 1.03, duration: 0.6, ease: 'power2.inOut',
+      yoyo: true, repeat: -1, repeatDelay: 2.4
+    });
+  });
+
+  // Curriculum chapters stagger from left on scroll
+  gsap.utils.toArray('.chapter').forEach((ch, i) => {
+    gsap.from(ch, {
+      scrollTrigger: { trigger: ch, start: 'top 85%', once: true },
+      x: -30, opacity: 0, duration: 0.5, delay: i * 0.04, ease: 'power3.out'
+    });
+  });
+
+  // Section reveals
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
   }, { threshold: .1 });

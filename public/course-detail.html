@@ -1453,5 +1453,33 @@
     window.open(`/api/sheet-music/${id}/download`, '_blank');
   }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+  // Entrance
+  gsap.from('.page-header, .stat-card, .card, .content-section', {
+    y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+  });
+  // Scroll triggers
+  gsap.utils.toArray('.card, tr, .list-item').forEach(el => {
+    gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+      y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+  });
+  // Hero entrance
+  gsap.from('.course-hero', { opacity: 0, duration: 0.8, ease: 'power2.out' });
+  gsap.from('.hero-content > *', { y: 30, opacity: 0, duration: 0.7, stagger: 0.10, ease: 'power3.out', delay: 0.3 });
+  // Chapter items on scroll
+  gsap.utils.toArray('.chapter-item').forEach(el => {
+    gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+      y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+  });
+  // Lesson rows on scroll
+  gsap.utils.toArray('.lesson-row').forEach(el => {
+    gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 95%' },
+      x: -10, opacity: 0, duration: 0.35, ease: 'power2.out' });
+  });
+</script>
 </body>
 </html>

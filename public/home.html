@@ -1013,6 +1013,12 @@
       .spinner { animation: none; }
     }
 
+    /* GSAP animated elements */
+    .hero-word { display: inline-block; will-change: transform; }
+    .stat-card { will-change: transform; }
+    .instructor-card { will-change: transform; }
+    .course-card { will-change: transform; }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 1024px) {
       .instructor-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1671,7 +1677,12 @@
     </div>
   </footer>
 
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script>
+    gsap.registerPlugin(ScrollTrigger);
+
     // ─── STICKY NAV ───
     const nav = document.getElementById('main-nav');
     window.addEventListener('scroll', () => {
@@ -1689,33 +1700,134 @@
       });
     });
 
-    // ─── INTERSECTION OBSERVER (reveal animations) ───
+    // ─── CURSOR FOLLOWER ───
+    const cursor = document.createElement('div');
+    cursor.style.cssText = 'position:fixed;width:8px;height:8px;background:#C8A84B;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen;';
+    document.body.appendChild(cursor);
+    const xTo = gsap.quickTo(cursor, 'x', { duration: 0.4, ease: 'power3' });
+    const yTo = gsap.quickTo(cursor, 'y', { duration: 0.4, ease: 'power3' });
+    window.addEventListener('mousemove', e => { xTo(e.clientX); yTo(e.clientY); });
+
+    // ─── HERO ANIMATION TIMELINE ───
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     if (!prefersReducedMotion) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
+      // Split hero title into word spans
+      const heroH1 = document.querySelector('.hero-h1');
+      if (heroH1) {
+        heroH1.querySelectorAll('span').forEach(line => {
+          const words = line.textContent.split(' ');
+          line.innerHTML = words.map(w => `<span class="hero-word" style="display:inline-block;">${w}</span>`).join(' ');
         });
-      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      }
+
+      const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+      // Logo nav fades in
+      heroTl.from('.nav-logo', { opacity: 0, y: -10, duration: 0.4 }, 0);
+
+      // Eyebrow
+      heroTl.from('.hero-eyebrow', { opacity: 0, y: 20, duration: 0.5 }, 0.2);
+
+      // Title words stagger
+      heroTl.from('.hero-word', {
+        opacity: 0, y: 30, duration: 0.5,
+        stagger: 0.06
+      }, 0.5);
+
+      // Subtitle
+      heroTl.from('.hero-sub', { opacity: 0, y: 20, duration: 0.5 }, 0.9);
+
+      // CTA buttons
+      heroTl.from('.hero-ctas', { opacity: 0, y: 20, duration: 0.5 }, 1.05);
+
+      // Proof row
+      heroTl.from('.hero-proof', { opacity: 0, y: 14, duration: 0.4 }, 1.2);
+
+      // ─── INSTRUCTOR CARDS — ScrollTrigger stagger ───
+      gsap.from('.instructor-card', {
+        scrollTrigger: {
+          trigger: '.instructor-grid',
+          start: 'top 80%',
+          once: true,
+        },
+        opacity: 0, y: 40, duration: 0.6,
+        stagger: 0.08,
+        ease: 'power3.out',
+      });
+
+      // ─── COURSE CARDS — ScrollTrigger stagger ───
+      gsap.from('#course-grid .course-card', {
+        scrollTrigger: {
+          trigger: '#course-grid',
+          start: 'top 80%',
+          once: true,
+        },
+        opacity: 0, y: 30, scale: 0.96, duration: 0.55,
+        stagger: 0.08,
+        ease: 'power3.out',
+      });
+
+      // ─── HIW FEATURES ───
+      gsap.from('.hiw-feature', {
+        scrollTrigger: {
+          trigger: '.hiw-features',
+          start: 'top 80%',
+          once: true,
+        },
+        opacity: 0, y: 30, duration: 0.55,
+        stagger: 0.1,
+        ease: 'power3.out',
+      });
+
+      // ─── CTA BANNER PARALLAX ───
+      gsap.to('.cta-inner', {
+        scrollTrigger: {
+          trigger: '#cta-banner',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+        y: -30,
+      });
+
+      // ─── SECTION LABELS & HEADINGS ───
+      gsap.utils.toArray('.section-label, .section-heading').forEach(el => {
+        gsap.from(el, {
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+          opacity: 0, y: 20, duration: 0.55, ease: 'power3.out'
+        });
+      });
+
+      // ─── STATS COUNT-UP ───
+      // home page has no numeric stats strip, handled via hero proof text
     } else {
+      // Reduced motion: just show everything
       document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
     }
 
-    // ─── FILTER CHIPS ───
+    // ─── FILTER CHIPS with GSAP ───
     function filterCourses(cat, btn) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.course-card').forEach(card => {
+
+      const cards = document.querySelectorAll('#course-grid .course-card');
+      const hiding = [], showing = [];
+
+      cards.forEach(card => {
         if (cat === 'all' || card.dataset.cat === cat) {
-          card.style.display = '';
+          showing.push(card);
         } else {
-          card.style.display = 'none';
+          hiding.push(card);
         }
       });
+
+      // Animate out hidden cards
+      gsap.to(hiding, { scale: 0.9, opacity: 0, duration: 0.25, ease: 'power2.inOut', onComplete: () => {
+        hiding.forEach(c => c.style.display = 'none');
+        showing.forEach(c => { c.style.display = ''; });
+        gsap.fromTo(showing, { scale: 0.96, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, stagger: 0.06, ease: 'power3.out' });
+      }});
     }
 
     // ─── AUTH REDIRECT ───

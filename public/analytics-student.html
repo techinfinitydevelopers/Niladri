@@ -5,31 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Progress — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
+    body { background: var(--bg); color: var(--text); }
+
     /* Heatmap */
     .heatmap-wrap { overflow-x: auto; padding-bottom: 8px; }
     .heatmap-grid { display: grid; grid-template-rows: repeat(7, 13px); grid-auto-flow: column; gap: 3px; width: max-content; }
-    .heatmap-cell { width: 13px; height: 13px; border-radius: 3px; background: #EDE4CB; cursor: default; position: relative; transition: transform 0.1s; }
+    .heatmap-cell { width: 13px; height: 13px; border-radius: 3px; background: #1E1B17; cursor: default; position: relative; transition: transform 0.1s; }
     .heatmap-cell:hover { transform: scale(1.3); z-index: 10; }
-    .heatmap-cell.lv1 { background: #A8C99A; }
-    .heatmap-cell.lv2 { background: #5A9A4F; }
-    .heatmap-cell.lv3 { background: #3D6828; }
-    .heatmap-cell.lv4 { background: #2D4F1E; }
+    .heatmap-cell.lv1 { background: #3D2E00; }
+    .heatmap-cell.lv2 { background: #7A6530; }
+    .heatmap-cell.lv3 { background: #C8A84B; }
+    .heatmap-cell.lv4 { background: #E8C96E; }
     .heatmap-month-labels { display: flex; width: max-content; margin-bottom: 6px; }
-    .heatmap-month-label { font-size: 11px; color: var(--text-light); font-weight: 500; }
+    .heatmap-month-label { font-size: 11px; color: var(--text-3); font-weight: 500; }
     .heatmap-day-labels { display: grid; grid-template-rows: repeat(7, 13px); gap: 3px; margin-right: 6px; flex-shrink: 0; }
-    .heatmap-day-label { font-size: 10px; color: var(--text-light); line-height: 13px; text-align: right; }
+    .heatmap-day-label { font-size: 10px; color: var(--text-3); line-height: 13px; text-align: right; }
     .heatmap-outer { display: flex; align-items: flex-start; }
-    .heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 11px; color: var(--text-light); }
+    .heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 11px; color: var(--text-3); }
     .heatmap-legend-cell { width: 13px; height: 13px; border-radius: 3px; }
 
     /* Tooltip */
     .chart-tooltip {
       position: fixed;
-      background: var(--text-dark);
-      color: var(--parchment);
+      background: var(--bg-elevated);
+      color: var(--text);
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 12px;
@@ -37,19 +39,32 @@
       z-index: 9999;
       white-space: nowrap;
       display: none;
+      border: 1px solid var(--gold-dim);
     }
 
     /* SVG chart wrappers */
-    .chart-svg-wrap { width: 100%; overflow: hidden; }
+    .chart-svg-wrap { width: 100%; overflow: hidden; background: var(--bg-2); border-radius: var(--radius); }
     .chart-svg-wrap svg { display: block; width: 100%; }
+
+    /* Stat card dark overrides */
+    .stat-card { background: var(--bg-card); border: 1px solid #2a2520; }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-3); }
 
     /* Course progress rows */
     .course-progress-row {
-      background: var(--parchment);
+      background: var(--bg-card);
       border-radius: var(--radius);
       padding: 16px 20px;
       margin-bottom: 10px;
-      box-shadow: var(--shadow);
+      border: 1px solid #2a2520;
     }
     .course-progress-row:last-child { margin-bottom: 0; }
     .score-badge {
@@ -59,9 +74,42 @@
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
-      background: rgba(209,161,78,0.15);
-      color: var(--gold-dark);
+      background: rgba(200,168,75,0.15);
+      color: var(--gold);
     }
+
+    /* Card dark */
+    .card { background: var(--bg-card); border: 1px solid #2a2520; }
+    .card-label { color: var(--text-2); }
+    .page-title { color: var(--text); }
+    .page-subtitle { color: var(--text-3); }
+
+    /* Progress bar */
+    .progress-bar { background: var(--bg-elevated); }
+    .progress-fill { background: var(--gold); }
+
+    /* Sidebar & topbar dark */
+    .sidebar { background: var(--bg-2); border-right: 1px solid #2a2520; }
+    .sidebar-brand .brand-title { color: var(--gold); }
+    .sidebar-brand .brand-sub { color: var(--text-3); }
+    .nav-item { color: var(--text-2); }
+    .nav-item:hover { background: var(--bg-elevated); color: var(--text); }
+    .nav-item.active { background: rgba(200,168,75,0.12); color: var(--gold); }
+    .sidebar-avatar { background: var(--gold-dim); color: var(--bg); }
+    .user-name { color: var(--text); }
+    .user-role { color: var(--text-3); }
+    .topbar { background: var(--bg-2); border-bottom: 1px solid #2a2520; }
+    .topbar-title { color: var(--text); }
+    .topbar-search { background: var(--bg-elevated); border-color: #2a2520; }
+    .topbar-search input { color: var(--text); background: transparent; }
+    .topbar-search input::placeholder { color: var(--text-3); }
+    .topbar-avatar { background: var(--gold-dim); color: var(--bg); }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .mb-28 { margin-bottom: 28px; }
+    .mb-16 { margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -132,37 +180,37 @@
 
     <main class="main-content">
       <!-- Page Header -->
-      <div style="margin-bottom:28px;">
+      <div style="margin-bottom:28px;" data-gsap>
         <h1 class="page-title">Your Progress</h1>
         <p class="page-subtitle" id="date-range-label">Loading…</p>
       </div>
 
       <!-- Row 1: Stat Cards -->
       <div class="stats-row mb-28">
-        <div class="stat-card">
+        <div class="stat-card" data-gsap>
           <div class="stat-icon" style="font-size:22px;">🔥</div>
-          <div class="stat-number" id="stat-streak">—</div>
+          <div class="stat-number" id="stat-streak" data-value="0">—</div>
           <div class="stat-label">Day Practice Streak</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" data-gsap>
           <div class="stat-icon green" style="font-size:22px;">⏱️</div>
-          <div class="stat-number" id="stat-month-hours">—</div>
+          <div class="stat-number" id="stat-month-hours" data-value="0">—</div>
           <div class="stat-label">Hours This Month</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" data-gsap>
           <div class="stat-icon gold" style="font-size:22px;">📊</div>
-          <div class="stat-number" id="stat-avg-grade">—</div>
+          <div class="stat-number" id="stat-avg-grade" data-value="0">—</div>
           <div class="stat-label">Average Grade</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="font-size:22px; background:rgba(45,79,30,0.10); color:var(--forest);">✅</div>
-          <div class="stat-number" id="stat-completed">—</div>
+        <div class="stat-card" data-gsap>
+          <div class="stat-icon" style="font-size:22px; background:rgba(200,168,75,0.12); color:var(--gold);">✅</div>
+          <div class="stat-number" id="stat-completed" data-value="0">—</div>
           <div class="stat-label">Assignments Done</div>
         </div>
       </div>
 
       <!-- Row 2: Heatmap -->
-      <div class="card mb-28">
+      <div class="card mb-28 section-block">
         <div class="card-label">Practice Heatmap — Last 12 Months</div>
         <div id="heatmap-container">
           <div class="skeleton" style="height:120px;"></div>
@@ -172,14 +220,14 @@
       <!-- Row 3: Charts -->
       <div class="grid-2 mb-28">
         <!-- Weekly Practice Bar -->
-        <div class="card">
+        <div class="card section-block">
           <div class="card-label">Weekly Practice (last 12 weeks)</div>
           <div class="chart-svg-wrap" id="bar-chart-wrap">
             <div class="skeleton" style="height:180px;"></div>
           </div>
         </div>
         <!-- Grade Trend Line -->
-        <div class="card">
+        <div class="card section-block">
           <div class="card-label">Grade Trend (last 6 months)</div>
           <div class="chart-svg-wrap" id="line-chart-wrap">
             <div class="skeleton" style="height:180px;"></div>
@@ -188,7 +236,7 @@
       </div>
 
       <!-- Row 4: Course Progress -->
-      <div class="card">
+      <div class="card section-block">
         <div class="card-label mb-16">Course Progress</div>
         <div id="course-progress-list">
           <div class="skeleton" style="height:70px; margin-bottom:10px;"></div>
@@ -242,11 +290,14 @@
       ]);
 
       // Stats
-      document.getElementById('stat-streak').textContent = analytics.current_streak_days ?? 0;
+      const streakVal = analytics.current_streak_days ?? 0;
+      document.getElementById('stat-streak').setAttribute('data-value', streakVal);
+      document.getElementById('stat-streak').textContent = streakVal;
 
       const practiceStats = await api.get('/api/practice-log/stats').catch(() => null);
       if (practiceStats) {
-        const hrs = (practiceStats.this_month_minutes / 60).toFixed(1);
+        const hrs = parseFloat((practiceStats.this_month_minutes / 60).toFixed(1));
+        document.getElementById('stat-month-hours').setAttribute('data-value', hrs);
         document.getElementById('stat-month-hours').textContent = hrs + 'h';
       }
 
@@ -255,8 +306,12 @@
       const avgGrade = grades.length
         ? Math.round(grades.reduce((s, g) => s + g.avg_score, 0) / grades.length)
         : 0;
+      document.getElementById('stat-avg-grade').setAttribute('data-value', avgGrade);
       document.getElementById('stat-avg-grade').textContent = avgGrade ? avgGrade + '%' : '—';
-      document.getElementById('stat-completed').textContent = analytics.assignments_completed ?? 0;
+
+      const completedVal = analytics.assignments_completed ?? 0;
+      document.getElementById('stat-completed').setAttribute('data-value', completedVal);
+      document.getElementById('stat-completed').textContent = completedVal;
 
       // Heatmap
       renderHeatmap(heatmap.dates || {});
@@ -269,23 +324,39 @@
 
       // Course progress
       renderCourseProgress(analytics.course_progress || []);
+
+      // Animate stat counters
+      animateCounters();
     } catch (err) {
       toast('Failed to load analytics', 'error');
     }
+  }
+
+  function animateCounters() {
+    document.querySelectorAll('.stat-number[data-value]').forEach(el => {
+      const raw = el.dataset.value;
+      const target = parseFloat(raw);
+      if (isNaN(target) || target === 0) return;
+      const isFloat = raw.includes('.');
+      gsap.from({ val: 0 }, {
+        val: target, duration: 1.5, ease: 'power2.out', delay: 0.5,
+        onUpdate: function() {
+          const v = this.targets()[0].val;
+          el.textContent = isFloat ? v.toFixed(1) + 'h' : Math.round(v) + (el.id === 'stat-avg-grade' ? '%' : '');
+        }
+      });
+    });
   }
 
   /* ─── Heatmap ─── */
   function renderHeatmap(dateMap) {
     const container = document.getElementById('heatmap-container');
 
-    // Build 52 weeks × 7 days going backwards from today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Start from 52 weeks ago, snapped to Sunday
     const startDay = new Date(today);
     startDay.setDate(today.getDate() - 364);
-    // Align to Sunday
     startDay.setDate(startDay.getDate() - startDay.getDay());
 
     const cells = [];
@@ -302,7 +373,6 @@
       d.setDate(d.getDate() + 1);
     }
 
-    // Month labels
     const monthLabels = [];
     const weeks = Math.ceil(cells.length / 7);
     let prevMonth = -1;
@@ -322,26 +392,21 @@
     let html = `
       <div style="overflow-x:auto;">
         <div style="display:flex; flex-direction:column; width:max-content;">
-          <!-- Month labels row -->
           <div style="display:flex; margin-left:${CELL + GAP + 6}px; margin-bottom:4px; position:relative; height:16px;">
     `;
 
     monthLabels.forEach(({ week, label }) => {
-      html += `<div style="position:absolute; left:${week * UNIT}px; font-size:10px; color:var(--text-light); font-weight:500; white-space:nowrap;">${label}</div>`;
+      html += `<div style="position:absolute; left:${week * UNIT}px; font-size:10px; color:var(--text-3); font-weight:500; white-space:nowrap;">${label}</div>`;
     });
 
     html += `</div>
-          <!-- Heatmap body -->
           <div style="display:flex; align-items:flex-start; gap:6px;">
-            <!-- Day labels -->
             <div style="display:grid; grid-template-rows:repeat(7, ${CELL}px); gap:${GAP}px; flex-shrink:0;">
-              ${['S','M','T','W','T','F','S'].map((d, i) => `<div style="font-size:10px; color:var(--text-light); line-height:${CELL}px; text-align:right; width:${CELL}px;">${[1,3,5].includes(i) ? d : ''}</div>`).join('')}
+              ${['S','M','T','W','T','F','S'].map((dl, i) => `<div style="font-size:10px; color:var(--text-3); line-height:${CELL}px; text-align:right; width:${CELL}px;">${[1,3,5].includes(i) ? dl : ''}</div>`).join('')}
             </div>
-            <!-- Grid -->
             <div id="heatmap-grid" style="display:grid; grid-template-rows:repeat(7, ${CELL}px); grid-auto-flow:column; gap:${GAP}px;">
     `;
 
-    // Pad start (days before first cell)
     for (let p = 0; p < cells[0].day; p++) {
       html += `<div style="width:${CELL}px; height:${CELL}px;"></div>`;
     }
@@ -353,14 +418,13 @@
     html += `
             </div>
           </div>
-          <!-- Legend -->
-          <div style="display:flex; align-items:center; gap:6px; margin-top:10px; margin-left:${CELL + GAP + 6}px; font-size:11px; color:var(--text-light);">
+          <div style="display:flex; align-items:center; gap:6px; margin-top:10px; margin-left:${CELL + GAP + 6}px; font-size:11px; color:var(--text-3);">
             <span>Less</span>
-            <div style="width:13px;height:13px;border-radius:3px;background:#EDE4CB;"></div>
-            <div style="width:13px;height:13px;border-radius:3px;background:#A8C99A;"></div>
-            <div style="width:13px;height:13px;border-radius:3px;background:#5A9A4F;"></div>
-            <div style="width:13px;height:13px;border-radius:3px;background:#3D6828;"></div>
-            <div style="width:13px;height:13px;border-radius:3px;background:#2D4F1E;"></div>
+            <div style="width:13px;height:13px;border-radius:3px;background:#1E1B17;"></div>
+            <div style="width:13px;height:13px;border-radius:3px;background:#3D2E00;"></div>
+            <div style="width:13px;height:13px;border-radius:3px;background:#7A6530;"></div>
+            <div style="width:13px;height:13px;border-radius:3px;background:#C8A84B;"></div>
+            <div style="width:13px;height:13px;border-radius:3px;background:#E8C96E;"></div>
             <span>More</span>
             <span style="margin-left:12px;">1–30 min · 31–60 min · 61–120 min · 120+ min</span>
           </div>
@@ -370,7 +434,6 @@
 
     container.innerHTML = html;
 
-    // Tooltip on hover
     const tooltip = document.getElementById('chart-tooltip');
     container.querySelectorAll('.heatmap-cell').forEach(cell => {
       cell.addEventListener('mousemove', (e) => {
@@ -396,7 +459,6 @@
     const chartW = W - PAD.left - PAD.right;
     const chartH = H - PAD.top - PAD.bottom;
 
-    // Ensure 12 weeks (fill empty)
     const now = new Date();
     const weekData = [];
     for (let i = 11; i >= 0; i--) {
@@ -410,7 +472,7 @@
     }
 
     const maxMin = Math.max(...weekData.map(w => w.minutes), 60);
-    const goalMin = 60 * 5; // example: 5 hours/week goal
+    const goalMin = 60 * 5;
     const barW = Math.max(4, (chartW / weekData.length) - 6);
 
     let bars = '';
@@ -419,29 +481,27 @@
       const x = PAD.left + (i / weekData.length) * chartW + (chartW / weekData.length - barW) / 2;
       const barH = Math.max(2, (w.minutes / maxMin) * chartH);
       const y = PAD.top + chartH - barH;
-      bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW}" height="${barH.toFixed(1)}" fill="#8B2E26" rx="3" opacity="0.85">
+      bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW}" height="${barH.toFixed(1)}" fill="#C8A84B" rx="3" opacity="0.85">
         <title>Week ${i + 1}: ${w.minutes} min</title>
       </rect>`;
       if (i % 3 === 0 || i === weekData.length - 1) {
         const wkNum = w.week.split('W')[1];
-        xLabels += `<text x="${(x + barW / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#7A6A52">W${wkNum}</text>`;
+        xLabels += `<text x="${(x + barW / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#6B5E50">W${wkNum}</text>`;
       }
     });
 
-    // Goal line
     const goalY = PAD.top + chartH - (goalMin / maxMin) * chartH;
     const goalLine = goalMin <= maxMin
-      ? `<line x1="${PAD.left}" y1="${goalY.toFixed(1)}" x2="${W - PAD.right}" y2="${goalY.toFixed(1)}" stroke="#D1A14E" stroke-width="1.5" stroke-dasharray="6,3"/>
-         <text x="${W - PAD.right + 2}" y="${(goalY + 4).toFixed(1)}" font-size="10" fill="#B8892F">Goal</text>`
+      ? `<line x1="${PAD.left}" y1="${goalY.toFixed(1)}" x2="${W - PAD.right}" y2="${goalY.toFixed(1)}" stroke="#E8C96E" stroke-width="1.5" stroke-dasharray="6,3"/>
+         <text x="${W - PAD.right + 2}" y="${(goalY + 4).toFixed(1)}" font-size="10" fill="#C8A84B">Goal</text>`
       : '';
 
-    // Y gridlines
     let gridLines = '';
     for (let i = 0; i <= 4; i++) {
       const yy = PAD.top + (i / 4) * chartH;
       const val = Math.round(maxMin * (1 - i / 4));
-      gridLines += `<line x1="${PAD.left}" y1="${yy.toFixed(1)}" x2="${W - PAD.right}" y2="${yy.toFixed(1)}" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>`;
-      gridLines += `<text x="${PAD.left - 4}" y="${(yy + 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#7A6A52">${val}</text>`;
+      gridLines += `<line x1="${PAD.left}" y1="${yy.toFixed(1)}" x2="${W - PAD.right}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
+      gridLines += `<text x="${PAD.left - 4}" y="${(yy + 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#6B5E50">${val}</text>`;
     }
 
     wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
@@ -449,7 +509,7 @@
       ${bars}
       ${goalLine}
       ${xLabels}
-      <text x="${PAD.left}" y="${H - 2}" font-size="10" fill="#7A6A52">minutes</text>
+      <text x="${PAD.left}" y="${H - 2}" font-size="10" fill="#6B5E50">minutes</text>
     </svg>`;
   }
 
@@ -469,7 +529,6 @@
     const chartW = W - PAD.left - PAD.right;
     const chartH = H - PAD.top - PAD.bottom;
 
-    // Ensure 6 months
     const monthData = [];
     for (let i = 5; i >= 0; i--) {
       const d = new Date();
@@ -481,19 +540,18 @@
 
     const validPoints = monthData.filter(m => m.avg_score != null);
     if (!validPoints.length) {
-      wrap.innerHTML = `<div style="height:200px;display:flex;align-items:center;justify-content:center;color:var(--text-light);font-size:13px;">No grade data yet</div>`;
+      wrap.innerHTML = `<div style="height:200px;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:13px;">No grade data yet</div>`;
       return;
     }
 
     const maxScore = 100;
 
-    // Y gridlines
     let gridLines = '';
     for (let i = 0; i <= 4; i++) {
       const yy = PAD.top + (i / 4) * chartH;
       const val = Math.round(maxScore * (1 - i / 4));
-      gridLines += `<line x1="${PAD.left}" y1="${yy.toFixed(1)}" x2="${W - PAD.right}" y2="${yy.toFixed(1)}" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>`;
-      gridLines += `<text x="${PAD.left - 4}" y="${(yy + 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#7A6A52">${val}</text>`;
+      gridLines += `<line x1="${PAD.left}" y1="${yy.toFixed(1)}" x2="${W - PAD.right}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
+      gridLines += `<text x="${PAD.left - 4}" y="${(yy + 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#6B5E50">${val}</text>`;
     }
 
     const pts = monthData.map((m, i) => {
@@ -504,9 +562,7 @@
       return { x, y, ...m };
     }).filter(p => p.y != null);
 
-    // Polyline
     const polyline = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-    // Area fill
     const areaPath = pts.length > 1
       ? `${polyline} L${pts[pts.length - 1].x.toFixed(1)},${(PAD.top + chartH).toFixed(1)} L${pts[0].x.toFixed(1)},${(PAD.top + chartH).toFixed(1)} Z`
       : '';
@@ -514,31 +570,31 @@
     let dots = '';
     let xLabels = '';
     pts.forEach(p => {
-      dots += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="#2D4F1E" stroke="#FAF7EE" stroke-width="2">
+      dots += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="#C8A84B" stroke="#0F0D0B" stroke-width="2">
         <title>${p.month}: ${Math.round(p.avg_score)}%</title>
       </circle>`;
     });
 
     monthData.forEach((m, i) => {
       const x = PAD.left + (i / (monthData.length - 1)) * chartW;
-      const lbl = m.month.slice(5); // MM
+      const lbl = m.month.slice(5);
       const mName = months[parseInt(lbl) - 1].slice(0, 3);
-      xLabels += `<text x="${x.toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#7A6A52">${mName}</text>`;
+      xLabels += `<text x="${x.toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#6B5E50">${mName}</text>`;
     });
 
     wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#2D4F1E" stop-opacity="0.15"/>
-          <stop offset="100%" stop-color="#2D4F1E" stop-opacity="0.02"/>
+          <stop offset="0%" stop-color="#C8A84B" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#C8A84B" stop-opacity="0.02"/>
         </linearGradient>
       </defs>
       ${gridLines}
       ${areaPath ? `<path d="${areaPath}" fill="url(#areaGrad)"/>` : ''}
-      <path d="${polyline}" fill="none" stroke="#2D4F1E" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${polyline}" fill="none" stroke="#C8A84B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
       ${dots}
       ${xLabels}
-      <text x="${PAD.left}" y="${H - 2}" font-size="10" fill="#7A6A52">% score</text>
+      <text x="${PAD.left}" y="${H - 2}" font-size="10" fill="#6B5E50">% score</text>
     </svg>`;
   }
 
@@ -553,8 +609,8 @@
       <div class="course-progress-row">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
           <div>
-            <div style="font-family:'Newsreader',serif; font-style:italic; font-size:16px; font-weight:600; color:var(--text-dark);">${c.title}</div>
-            <div style="font-size:12px; color:var(--text-light); margin-top:2px;">${c.lessons_done || 0} / ${c.total_lessons || 0} lessons completed</div>
+            <div style="font-family:'Newsreader',serif; font-style:italic; font-size:16px; font-weight:600; color:var(--text);">${c.title}</div>
+            <div style="font-size:12px; color:var(--text-3); margin-top:2px;">${c.lessons_done || 0} / ${c.total_lessons || 0} lessons completed</div>
           </div>
           <span class="score-badge">${c.progress_pct || 0}% done</span>
         </div>
@@ -569,6 +625,18 @@
     if (e.key === 'Enter' && e.target.value) {
       window.location.href = `/course-catalog.html?search=${encodeURIComponent(e.target.value)}`;
     }
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.from('[data-gsap], .stat-card, .card, .chart-wrap', {
+    y: 28, opacity: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out', delay: 0.15
+  });
+  document.querySelectorAll('.section-block, .table-wrap, .filter-row').forEach(el => {
+    gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+      y: 20, opacity: 0, duration: 0.55, ease: 'power2.out' });
   });
 </script>
 </body>

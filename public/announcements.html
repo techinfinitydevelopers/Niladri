@@ -5,44 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Announcements — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
     .ann-feed { display: flex; flex-direction: column; gap: 0; }
-    .ann-card { background: var(--parchment); border-radius: 0; padding: 24px 28px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    .ann-card {
+      background: var(--bg-card);
+      border-radius: 0;
+      padding: 24px 28px;
+      border-bottom: 1px solid rgba(200,168,75,0.12);
+      transition: background 0.15s;
+    }
     .ann-feed > .ann-card:first-child { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
     .ann-feed > .ann-card:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-bottom: none; }
     .ann-feed > .ann-card:only-child { border-radius: var(--radius-lg); }
-    .ann-card:hover { background: var(--parchment-light); }
-    .ann-card.pinned { border-left: 3px solid var(--gold); padding-left: 25px; }
+    .ann-card:hover { background: var(--bg-elevated); }
+    .ann-card.pinned {
+      border-left: 3px solid var(--gold);
+      padding-left: 25px;
+    }
     .ann-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
-    .ann-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--forest); color: var(--parchment); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ann-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200,168,75,0.25);
+      color: var(--gold);
+      font-weight: 700; font-size: 13px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
     .ann-meta { flex: 1; }
-    .ann-author { font-size: 13px; font-weight: 600; color: var(--text-dark); }
-    .ann-time { font-size: 11px; color: var(--text-light); }
+    .ann-author { font-size: 13px; font-weight: 600; color: var(--text); }
+    .ann-time { font-size: 11px; color: var(--text-3); }
     .ann-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
-    .course-badge { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; background: rgba(45,79,30,0.1); color: var(--forest); }
-    .pin-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; background: rgba(209,161,78,0.15); color: #8B6914; }
-    .email-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; background: rgba(45,79,30,0.08); color: var(--forest); }
-    .ann-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 19px; font-weight: 600; color: var(--text-dark); margin-bottom: 10px; }
-    .ann-body { font-size: 14px; color: var(--text-mid); line-height: 1.7; white-space: pre-wrap; }
+    .course-badge {
+      display: inline-flex; padding: 2px 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      background: rgba(200,168,75,0.08); color: var(--gold);
+      border: 1px solid rgba(200,168,75,0.18);
+    }
+    .pin-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 700;
+      background: rgba(200,168,75,0.15); color: var(--gold-bright);
+      border: 1px solid rgba(200,168,75,0.30);
+    }
+    .email-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 700;
+      background: rgba(200,168,75,0.06); color: var(--text-2);
+      border: 1px solid rgba(200,168,75,0.12);
+    }
+    .ann-title {
+      font-family: var(--serif); font-style: italic;
+      font-size: 19px; font-weight: 600;
+      color: var(--text); margin-bottom: 10px;
+    }
+    .ann-body { font-size: 14px; color: var(--text-2); line-height: 1.7; white-space: pre-wrap; }
     .ann-actions { display: flex; gap: 8px; margin-top: 14px; }
     .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(17,16,9,0.65); display: flex; align-items: center; justify-content: center; z-index: 300; animation: fadeIn 0.14s ease; }
-    .modal-box { background: var(--parchment); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 680px; box-shadow: var(--shadow-lg); animation: scaleIn 0.16s ease; max-height: 90vh; overflow-y: auto; }
-    .modal-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 21px; font-weight: 600; color: var(--text-dark); margin-bottom: 20px; }
-    .preview-panel { background: var(--parchment-dark); border-radius: var(--radius); padding: 16px 18px; margin-top: 12px; font-size: 13px; color: var(--text-mid); line-height: 1.7; min-height: 80px; white-space: pre-wrap; font-style: italic; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; animation: fadeIn 0.14s ease;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.18);
+      border-radius: var(--radius-lg);
+      padding: 32px; width: 100%; max-width: 680px;
+      box-shadow: var(--shadow-lg);
+      animation: scaleIn 0.16s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-title {
+      font-family: var(--serif); font-style: italic;
+      font-size: 21px; font-weight: 600; color: var(--text); margin-bottom: 20px;
+    }
+    .preview-panel {
+      background: var(--bg-2);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: var(--radius);
+      padding: 16px 18px; margin-top: 12px;
+      font-size: 13px; color: var(--text-2);
+      line-height: 1.7; min-height: 80px;
+      white-space: pre-wrap; font-style: italic;
+    }
     .toggle-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .toggle-label { font-size: 13px; font-weight: 500; color: var(--text-mid); }
+    .toggle-label { font-size: 13px; font-weight: 500; color: var(--text-2); }
     .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track { position: absolute; inset: 0; border-radius: 99px; background: var(--parchment-dark); border: 1.5px solid var(--border); cursor: pointer; transition: background 0.18s; }
-    .toggle input:checked + .toggle-track { background: var(--forest); border-color: var(--forest); }
-    .toggle-track::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: white; top: 50%; left: 2px; transform: translateY(-50%); transition: left 0.18s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-track {
+      position: absolute; inset: 0; border-radius: 99px;
+      background: var(--bg-elevated);
+      border: 1.5px solid rgba(200,168,75,0.2);
+      cursor: pointer; transition: background 0.18s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--gold); border-color: var(--gold); }
+    .toggle-track::after {
+      content: ''; position: absolute;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--text); top: 50%; left: 2px;
+      transform: translateY(-50%); transition: left 0.18s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
     .toggle input:checked + .toggle-track::after { left: 20px; }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scaleIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .empty-state { text-align: center; padding: 60px 40px; color: var(--text-light); }
+    .empty-state { text-align: center; padding: 60px 40px; color: var(--text-3); }
+
+    /* Buttons */
+    .btn { font-family: var(--sans); }
+    .btn-primary {
+      background: var(--gold); color: #0F0D0B;
+      border: 1.5px solid var(--gold);
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+    .btn-ghost {
+      background: transparent; color: var(--text-2);
+      border: 1.5px solid rgba(200,168,75,0.25);
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
   </style>
 </head>
 <body>
@@ -117,7 +206,7 @@
     </header>
 
     <main class="main-content">
-      <div style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
+      <div class="page-header" style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
         <div>
           <h1 class="page-title">Announcements</h1>
           <p class="page-subtitle">Updates and news from your instructors.</p>
@@ -147,7 +236,7 @@
   <div class="modal-box">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
       <div class="modal-title" id="ann-modal-title">New Announcement</div>
-      <button style="background:none;border:none;cursor:pointer;color:var(--text-light);" onclick="closeModal()">
+      <button style="background:none;border:none;cursor:pointer;color:var(--text-3);" onclick="closeModal()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -165,7 +254,7 @@
       <label class="form-label">Message *</label>
       <textarea class="form-input" id="ann-body" rows="6" placeholder="Write your announcement…" oninput="updatePreview()"></textarea>
     </div>
-    <div style="font-size:12px; font-weight:600; color:var(--text-light); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.08em;">Live Preview</div>
+    <div style="font-size:12px; font-weight:600; color:var(--text-3); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.08em;">Live Preview</div>
     <div class="preview-panel" id="ann-preview">Start typing to see a preview…</div>
     <div style="margin-top:16px; display:flex; flex-direction:column; gap:10px;">
       <div class="toggle-wrap">
@@ -251,7 +340,6 @@
     const select = document.getElementById('course-filter');
     const courses = {};
     anns.forEach(a => { if (a.course_id && a.course_title) courses[a.course_id] = a.course_title; });
-    // Keep existing options after first
     while (select.children.length > 1) select.removeChild(select.lastChild);
     Object.entries(courses).forEach(([id, title]) => {
       const opt = document.createElement('option');
@@ -273,7 +361,7 @@
   function renderAnnouncements(anns) {
     const el = document.getElementById('announcements-feed');
     if (!anns || anns.length === 0) {
-      el.innerHTML = `<div class="card empty-state"><p style="font-style:italic;color:var(--text-light);">No announcements yet for your courses.</p></div>`;
+      el.innerHTML = `<div class="card empty-state"><p style="font-style:italic;color:var(--text-3);">No announcements yet for your courses.</p></div>`;
       return;
     }
     el.innerHTML = `<div class="ann-feed">${anns.map(a => renderCard(a)).join('')}</div>`;
@@ -304,7 +392,7 @@
           <div class="ann-actions">
             <button class="btn btn-ghost" style="font-size:12px;" onclick="editAnn(${a.id})">Edit</button>
             <button class="btn btn-ghost" style="font-size:12px;" onclick="togglePin(${a.id}, ${a.pinned ? 0 : 1})">${a.pinned ? 'Unpin' : 'Pin'}</button>
-            <button class="btn btn-ghost" style="font-size:12px;color:var(--crimson);" onclick="deleteAnn(${a.id})">Delete</button>
+            <button class="btn btn-ghost" style="font-size:12px;color:#c0392b;" onclick="deleteAnn(${a.id})">Delete</button>
           </div>` : ''}
       </div>`;
   }
@@ -420,6 +508,19 @@
       toast(e.message, 'error');
     }
   }
+</script>
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('.page-header, .stat-card, .card, .list-item, .section-block', {
+  y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+});
+gsap.utils.toArray('.card, .list-item, tr').forEach(el => {
+  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+    y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+});
 </script>
 </body>
 </html>

@@ -274,9 +274,25 @@
 
 <div class="toast-container" id="toast-container"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="/assets/js/api.js"></script>
 <script src="/assets/js/auth-guard.js"></script>
 <script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ─── PAGE LOAD ENTRANCE ANIMATION ───
+  window.addEventListener('DOMContentLoaded', () => {
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('#sidebar', { x: -20, opacity: 0, duration: 0.5 }, 0);
+    tl.from('.topbar', { y: -10, opacity: 0, duration: 0.45 }, 0.1);
+    tl.from('#welcome-banner', { opacity: 0, y: 18, duration: 0.5 }, 0.25);
+    tl.from('#stats-row .stat-card', {
+      opacity: 0, y: 20, duration: 0.4,
+      stagger: 0.08,
+    }, 0.45);
+  });
+
   function toast(msg, type = 'success') {
     const tc = document.getElementById('toast-container');
     const t = document.createElement('div');
@@ -320,6 +336,43 @@
     return INSTRUCTOR_GRADIENTS[idx];
   }
 
+  // ─── COUNT-UP HELPER ───
+  function countUp(el, target, suffix = '') {
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: target, duration: 1.4, ease: 'power2.out',
+      onUpdate: () => { el.textContent = Math.round(obj.val) + suffix; }
+    });
+  }
+
+  // ─── PROGRESS BAR ANIMATION ───
+  function animateProgressBars() {
+    document.querySelectorAll('.progress-fill').forEach(bar => {
+      const targetWidth = bar.style.width;
+      bar.style.width = '0%';
+      ScrollTrigger.create({
+        trigger: bar,
+        start: 'top 90%',
+        once: true,
+        onEnter: () => {
+          gsap.to(bar, { width: targetWidth, duration: 0.9, ease: 'power2.out' });
+        }
+      });
+    });
+  }
+
+  // ─── QUOTE WIDGET WORD REVEAL ───
+  function animateQuote() {
+    const quoteEl = document.getElementById('quote-text');
+    if (!quoteEl) return;
+    const words = quoteEl.textContent.split(' ');
+    quoteEl.innerHTML = words.map(w => `<span style="display:inline-block; opacity:0;">${w}</span>`).join(' ');
+    gsap.to(quoteEl.querySelectorAll('span'), {
+      scrollTrigger: { trigger: quoteEl, start: 'top 85%', once: true },
+      opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out'
+    });
+  }
+
   document.addEventListener('userLoaded', (e) => {
     const user = e.detail;
     const initials = user.avatar_initials || (user.first_name[0] + user.last_name[0]);
@@ -340,8 +393,10 @@
       const avg = count > 0
         ? Math.round(enrollments.reduce((s, e) => s + (e.progress_pct || 0), 0) / count)
         : 0;
-      document.getElementById('stat-courses').textContent = count;
-      document.getElementById('stat-avg').textContent = avg + '%';
+      countUp(document.getElementById('stat-courses'), count);
+      countUp(document.getElementById('stat-avg'), avg, '%');
+      // Animate progress bars after DOM settles
+      setTimeout(animateProgressBars, 200);
     } catch (e) {
       document.getElementById('enrollments-grid').innerHTML = '<div class="card"><div class="empty-state"><div class="empty-icon">📚</div><h3>No courses yet</h3><p>Browse the catalog to enroll in your first course.</p><a href="/course-catalog.html" class="btn btn-primary" style="margin-top:14px; display:inline-flex;">Browse Catalog</a></div></div>';
     }
@@ -370,6 +425,8 @@
         document.getElementById('quote-attribution').textContent = `— ${data.quote.attribution}`;
       }
     } catch (e) {}
+    // Animate quote widget
+    setTimeout(animateQuote, 300);
   }
 
   function renderEnrollments(enrollments) {

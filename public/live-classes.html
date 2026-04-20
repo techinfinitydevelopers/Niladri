@@ -5,40 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Classes — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
-    .session-card { background: var(--parchment); border-radius: var(--radius-lg); padding: 0; box-shadow: var(--shadow); display: flex; gap: 0; overflow: hidden; margin-bottom: 16px; transition: box-shadow 0.2s; }
-    .session-card:hover { box-shadow: var(--shadow-lg); }
-    .session-date-col { width: 90px; min-width: 90px; background: var(--crimson); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 12px; color: var(--parchment); text-align: center; }
-    .session-date-day { font-family: 'Newsreader', serif; font-size: 38px; font-weight: 600; line-height: 1; }
-    .session-date-month { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; opacity: 0.85; }
-    .session-date-time { font-size: 11px; opacity: 0.75; margin-top: 6px; }
+    /* Session cards */
+    .session-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: var(--radius-lg);
+      padding: 0; box-shadow: var(--shadow);
+      display: flex; gap: 0; overflow: hidden;
+      margin-bottom: 16px; transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .session-card:hover { box-shadow: var(--shadow-lg); border-color: rgba(200,168,75,0.25); }
+
+    .session-date-col {
+      width: 90px; min-width: 90px;
+      background: var(--bg-elevated);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px 12px; color: var(--text); text-align: center;
+      border-right: 1px solid rgba(200,168,75,0.12);
+    }
+    .session-date-col.live-col {
+      background: rgba(200,168,75,0.10);
+      border-right-color: rgba(200,168,75,0.20);
+    }
+    .session-date-day {
+      font-family: var(--serif); font-size: 38px;
+      font-weight: 600; line-height: 1; color: var(--gold);
+    }
+    .session-date-month { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; color: var(--text-2); }
+    .session-date-time { font-size: 11px; color: var(--text-3); margin-top: 6px; }
+
     .session-body { flex: 1; padding: 20px 22px; }
-    .session-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+    .session-title {
+      font-family: var(--serif); font-style: italic;
+      font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px;
+    }
     .session-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; align-items: center; }
-    .session-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--text-light); }
-    .session-desc { font-size: 13px; color: var(--text-mid); line-height: 1.6; margin-bottom: 12px; }
+    .session-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--text-3); }
+    .session-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; }
     .session-actions { display: flex; align-items: center; gap: 10px; }
+
+    /* Live indicator with pulsing gold dot */
     .status-live { display: inline-flex; align-items: center; gap: 6px; }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; animation: pulse-live 1.4s ease-in-out infinite; }
-    @keyframes pulse-live { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.3); } }
-    .countdown { font-size: 12px; font-weight: 600; color: var(--gold-dark); background: rgba(209,161,78,0.12); padding: 3px 10px; border-radius: 99px; }
-    .past-list { background: var(--parchment); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
-    .past-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gold-bright);
+      animation: pulse-gold 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse-gold {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(200,168,75,0.5); }
+      50% { opacity: 0.85; transform: scale(1.25); box-shadow: 0 0 0 5px rgba(200,168,75,0); }
+    }
+
+    /* Join pill for upcoming sessions */
+    .join-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--gold); color: #0F0D0B;
+      border: none; border-radius: 99px;
+      padding: 8px 18px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .join-pill:hover { background: var(--gold-bright); box-shadow: 0 0 16px rgba(200,168,75,0.30); }
+
+    .countdown {
+      font-size: 12px; font-weight: 600; color: var(--gold);
+      background: rgba(200,168,75,0.10);
+      padding: 3px 10px; border-radius: 99px;
+      border: 1px solid rgba(200,168,75,0.20);
+    }
+
+    /* Past sessions — muted dark */
+    .past-list {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.08);
+      border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+    }
+    .past-item {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(200,168,75,0.06);
+      opacity: 0.75; transition: opacity 0.15s, background 0.15s;
+    }
     .past-item:last-child { border-bottom: none; }
-    .past-item:hover { background: var(--parchment-dark); }
-    .past-date-badge { width: 44px; min-width: 44px; height: 44px; border-radius: var(--radius); background: rgba(139,46,38,0.08); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .past-date-d { font-family: 'Newsreader', serif; font-size: 16px; font-weight: 600; color: var(--crimson); line-height: 1; }
-    .past-date-m { font-size: 9px; font-weight: 600; color: var(--text-light); text-transform: uppercase; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(17,16,9,0.65); display: flex; align-items: center; justify-content: center; z-index: 300; animation: fadeIn 0.14s ease; }
-    .modal-box { background: var(--parchment); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 520px; box-shadow: var(--shadow-lg); animation: scaleIn 0.16s ease; }
-    .modal-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 20px; font-weight: 600; color: var(--text-dark); margin-bottom: 20px; }
+    .past-item:hover { background: var(--bg-elevated); opacity: 1; }
+    .past-date-badge {
+      width: 44px; min-width: 44px; height: 44px; border-radius: var(--radius);
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200,168,75,0.12);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .past-date-d { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--text-2); line-height: 1; }
+    .past-date-m { font-size: 9px; font-weight: 600; color: var(--text-3); text-transform: uppercase; }
+
+    /* Playback button ghost */
+    .btn-playback {
+      background: transparent; color: var(--text-2);
+      border: 1.5px solid rgba(200,168,75,0.20);
+      font-size: 12px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: var(--r-md); text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-playback:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; animation: fadeIn 0.14s ease;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.18);
+      border-radius: var(--radius-lg); padding: 32px;
+      width: 100%; max-width: 520px;
+      box-shadow: var(--shadow-lg); animation: scaleIn 0.16s ease;
+    }
+    .modal-title {
+      font-family: var(--serif); font-style: italic;
+      font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 20px;
+    }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scaleIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
     .section-divider { display: flex; align-items: center; gap: 14px; margin: 28px 0 20px; }
-    .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .section-divider-label { font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+    .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: rgba(200,168,75,0.12); }
+    .section-divider-label { font-size: 12px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+
+    /* Buttons */
+    .btn-primary { background: var(--gold); color: #0F0D0B; border: 1.5px solid var(--gold); font-weight: 700; }
+    .btn-primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+    .btn-outline { background: transparent; color: var(--gold); border: 1.5px solid rgba(200,168,75,0.35); font-weight: 600; }
+    .btn-outline:hover { background: rgba(200,168,75,0.08); border-color: var(--gold); }
+    .btn-ghost { background: transparent; color: var(--text-2); border: 1.5px solid rgba(200,168,75,0.15); }
+    .btn-ghost:hover { border-color: rgba(200,168,75,0.35); color: var(--text); }
+
+    /* Course tag chip */
+    .course-chip { background: rgba(200,168,75,0.08); color: var(--gold); border-radius: 99px; padding: 2px 8px; font-size: 11px; font-weight: 600; border: 1px solid rgba(200,168,75,0.18); }
   </style>
 </head>
 <body>
@@ -113,7 +220,7 @@
     </header>
 
     <main class="main-content">
-      <div style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
+      <div class="page-header" style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
         <div>
           <h1 class="page-title">Live Classes</h1>
           <p class="page-subtitle">Scheduled and on-demand sessions with your instructors.</p>
@@ -149,7 +256,7 @@
   <div class="modal-box" style="max-width:560px;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
       <div class="modal-title">Schedule a Live Session</div>
-      <button style="background:none;border:none;cursor:pointer;color:var(--text-light);" onclick="closeScheduleModal()">
+      <button style="background:none;border:none;cursor:pointer;color:var(--text-3);" onclick="closeScheduleModal()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -182,7 +289,7 @@
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Linked Course <span style="font-weight:400;color:var(--text-light);">(optional)</span></label>
+      <label class="form-label">Linked Course <span style="font-weight:400;color:var(--text-3);">(optional)</span></label>
       <select class="form-select" id="sess-course">
         <option value="">None</option>
       </select>
@@ -265,9 +372,7 @@
       ]);
       renderUpcoming([
         ...(upcoming.sessions || []),
-        // Also include 'live' sessions
       ]);
-      // Fetch live sessions separately
       api.get('/api/live-sessions?status=live').then(live => {
         renderUpcoming([...(live.sessions || []), ...(upcoming.sessions || [])]);
       }).catch(() => {});
@@ -280,7 +385,7 @@
   function renderUpcoming(sessions) {
     const el = document.getElementById('upcoming-sessions');
     if (!sessions || sessions.length === 0) {
-      el.innerHTML = `<div class="card" style="text-align:center;padding:48px;color:var(--text-light);font-style:italic;">No upcoming sessions scheduled.</div>`;
+      el.innerHTML = `<div class="card" style="text-align:center;padding:48px;color:var(--text-3);font-style:italic;">No upcoming sessions scheduled.</div>`;
       return;
     }
     el.innerHTML = sessions.map(s => {
@@ -291,11 +396,11 @@
 
       let actionBtn = '';
       if (isLive) {
-        actionBtn = `<a href="${s.meeting_url || '#'}" target="_blank" class="btn btn-primary" style="background:#16a34a;border-color:#16a34a;">
+        actionBtn = `<a href="${s.meeting_url || '#'}" target="_blank" class="join-pill">
           <span class="status-live"><span class="live-dot"></span> Join Now</span>
         </a>`;
       } else if (s.status === 'scheduled') {
-        actionBtn = `<button class="btn btn-outline" onclick="registerSession(${s.id})">Register</button>`;
+        actionBtn = `<button class="join-pill" style="background:transparent;color:var(--gold);border:1.5px solid rgba(200,168,75,0.35);" onclick="registerSession(${s.id})">Register</button>`;
       }
 
       const instructorActions = isInstructor && s.instructor_id === currentUser.id ? `
@@ -305,7 +410,7 @@
 
       return `
         <div class="session-card">
-          <div class="session-date-col" style="background:${isLive ? '#16a34a' : 'var(--crimson)'};">
+          <div class="session-date-col${isLive ? ' live-col' : ''}">
             <div class="session-date-day">${d.getDate()}</div>
             <div class="session-date-month">${d.toLocaleString('en', { month: 'short' })}</div>
             <div class="session-date-time">${formatTime(s.scheduled_at)}</div>
@@ -322,7 +427,7 @@
                 ${s.attendee_count || 0} / ${s.max_participants || 50}
               </span>
               ${s.instructor_name ? `<span class="session-tag">${s.instructor_name}</span>` : ''}
-              ${s.course_title ? `<span style="background:rgba(45,79,30,0.1);color:var(--forest);border-radius:99px;padding:2px 8px;font-size:11px;font-weight:600;">${s.course_title}</span>` : ''}
+              ${s.course_title ? `<span class="course-chip">${s.course_title}</span>` : ''}
               ${cd ? `<span class="countdown">${cd}</span>` : ''}
             </div>
             ${s.description ? `<div class="session-desc">${s.description}</div>` : ''}
@@ -338,25 +443,25 @@
   function renderPast(sessions) {
     const el = document.getElementById('past-sessions');
     if (!sessions || sessions.length === 0) {
-      el.innerHTML = `<div style="color:var(--text-light);font-style:italic;font-size:13px;padding:8px 0;">No past sessions yet.</div>`;
+      el.innerHTML = `<div style="color:var(--text-3);font-style:italic;font-size:13px;padding:8px 0;">No past sessions yet.</div>`;
       return;
     }
     el.innerHTML = `<div class="past-list">${sessions.map(s => {
       const d = new Date(s.scheduled_at);
       return `
-        <div class="past-item">
+        <div class="past-item list-item">
           <div class="past-date-badge">
             <div class="past-date-d">${d.getDate()}</div>
             <div class="past-date-m">${d.toLocaleString('en', { month: 'short' })}</div>
           </div>
           <div style="flex:1;">
-            <div style="font-weight:600; font-size:14px; color:var(--text-dark);">${s.title}</div>
-            <div style="font-size:12px; color:var(--text-light);">${s.instructor_name || ''} · ${s.duration_minutes || 60} min · ${formatDate(s.scheduled_at)}</div>
+            <div style="font-weight:600; font-size:14px; color:var(--text-2);">${s.title}</div>
+            <div style="font-size:12px; color:var(--text-3);">${s.instructor_name || ''} · ${s.duration_minutes || 60} min · ${formatDate(s.scheduled_at)}</div>
           </div>
-          ${s.recording_url ? `<a href="${s.recording_url}" target="_blank" class="btn btn-ghost" style="font-size:12px;">
+          ${s.recording_url ? `<a href="${s.recording_url}" target="_blank" class="btn-playback">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
             Recording
-          </a>` : '<span style="font-size:12px;color:var(--text-light);">No recording</span>'}
+          </a>` : '<span style="font-size:12px;color:var(--text-3);">No recording</span>'}
         </div>`;
     }).join('')}</div>`;
   }
@@ -450,6 +555,19 @@
       btn.disabled = false; btn.textContent = 'Create Session';
     }
   }
+</script>
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('.page-header, .stat-card, .card, .list-item, .section-block', {
+  y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+});
+gsap.utils.toArray('.card, .list-item, tr').forEach(el => {
+  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+    y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+});
 </script>
 </body>
 </html>

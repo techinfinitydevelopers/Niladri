@@ -5,30 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notifications — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
+    :root {
+      --bg: #080706;
+      --bg-2: #0F0D0B;
+      --bg-card: #161412;
+      --bg-elevated: #1E1B17;
+      --gold: #C8A84B;
+      --gold-bright: #E8C96E;
+      --gold-dim: #7A6530;
+      --text: #F0E6D3;
+      --text-2: #B8A898;
+      --text-3: #6B5E50;
+      --serif: 'Cormorant Garamond', serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); }
+
     .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .chip { padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); color: var(--text-light); background: var(--parchment); transition: all var(--transition); }
-    .chip.active { background: var(--crimson); border-color: var(--crimson); color: var(--parchment); }
-    .chip:hover:not(.active) { border-color: var(--crimson); color: var(--crimson); }
-    .notif-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; background: var(--parchment); border-radius: var(--radius-lg); margin-bottom: 8px; cursor: pointer; transition: all var(--transition); position: relative; border-left: 4px solid transparent; }
-    .notif-item.unread { background: var(--parchment-light); border-left-color: var(--crimson); }
-    .notif-item.unread.type-message { border-left-color: var(--forest); }
-    .notif-item.unread.type-masterclass { border-left-color: var(--gold-dark); }
-    .notif-item:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+    .chip {
+      padding: 6px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid rgba(200,168,75,0.2);
+      color: var(--text-3);
+      background: var(--bg-card);
+      transition: all 0.18s;
+    }
+    .chip.active { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+    .chip:hover:not(.active) { border-color: rgba(200,168,75,0.5); color: var(--gold); }
+
+    .notif-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.1);
+      border-radius: var(--radius-lg, 12px);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.18s;
+      position: relative;
+      border-left: 4px solid transparent;
+    }
+    .notif-item.unread { background: var(--bg-elevated); border-left-color: var(--gold); }
+    .notif-item.unread.type-message { border-left-color: rgba(200,168,75,0.6); }
+    .notif-item.unread.type-masterclass { border-left-color: var(--gold-bright); }
+    .notif-item:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.4); transform: translateY(-1px); border-color: rgba(200,168,75,0.3); }
+
     .notif-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .notif-icon.grade { background: rgba(139,46,38,0.10); color: var(--crimson); }
-    .notif-icon.message { background: rgba(45,79,30,0.10); color: var(--forest); }
-    .notif-icon.masterclass { background: rgba(209,161,78,0.15); color: var(--gold-dark); }
-    .notif-icon.system { background: rgba(0,0,0,0.06); color: var(--text-light); }
-    .notif-title { font-weight: 600; font-size: 14px; color: var(--text-dark); margin-bottom: 3px; }
-    .notif-body { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
-    .notif-time { font-size: 11px; color: var(--text-light); margin-top: 6px; }
-    .notif-unread-dot { width: 8px; height: 8px; background: var(--crimson); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
-    .notif-delete { padding: 6px; color: var(--text-light); border-radius: 6px; transition: all var(--transition); opacity: 0; flex-shrink: 0; }
+    .notif-icon.grade { background: rgba(200,168,75,0.12); color: var(--gold); }
+    .notif-icon.message { background: rgba(200,168,75,0.08); color: var(--gold-bright); }
+    .notif-icon.masterclass { background: rgba(232,201,110,0.12); color: var(--gold-bright); }
+    .notif-icon.system { background: rgba(255,255,255,0.04); color: var(--text-3); }
+
+    .notif-title { font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 3px; }
+    .notif-body { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+    .notif-time { font-size: 11px; color: var(--text-3); margin-top: 6px; }
+    .notif-unread-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .notif-delete { padding: 6px; color: var(--text-3); border-radius: 6px; transition: all 0.15s; opacity: 0; flex-shrink: 0; background: none; border: none; cursor: pointer; }
     .notif-item:hover .notif-delete { opacity: 1; }
-    .notif-delete:hover { background: rgba(139,46,38,0.10); color: var(--crimson); }
+    .notif-delete:hover { background: rgba(200,168,75,0.1); color: var(--gold); }
+
     .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
     .empty-notif { text-align: center; padding: 80px 40px; }
     .empty-notif-icon { margin: 0 auto 20px; }
@@ -88,12 +132,17 @@
     <header class="topbar">
       <div class="topbar-title">Notifications</div>
       <div class="topbar-actions">
-        <button class="icon-btn" onclick="markAllRead()" title="Mark all read" style="width:auto;border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;color:var(--crimson);">Mark all read</button>
+        <button class="icon-btn" onclick="markAllRead()" title="Mark all read" style="width:auto;border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;color:var(--gold);">Mark all read</button>
         <div class="topbar-avatar" id="topbar-avatar">—</div>
       </div>
     </header>
 
     <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Notifications</h1>
+        </div>
+      </div>
       <div class="filter-chips">
         <div class="chip active" onclick="setFilter('all', this)">All</div>
         <div class="chip" onclick="setFilter('unread', this)">Unread</div>
@@ -167,20 +216,20 @@
         <div class="empty-notif">
           <div class="empty-notif-icon">
             <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
-              <circle cx="50" cy="50" r="48" fill="rgba(139,46,38,0.06)" stroke="rgba(139,46,38,0.12)" stroke-width="2"/>
-              <path d="M35 45a15 15 0 0 1 30 0c0 15-6 20-6 20H41s-6-5-6-20z" stroke="var(--crimson)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M46 65a4 4 0 0 0 8 0" stroke="var(--crimson)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <line x1="42" y1="38" x2="58" y2="38" stroke="var(--gold-dark)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="50" cy="50" r="48" fill="rgba(200,168,75,0.05)" stroke="rgba(200,168,75,0.15)" stroke-width="2"/>
+              <path d="M35 45a15 15 0 0 1 30 0c0 15-6 20-6 20H41s-6-5-6-20z" stroke="var(--gold)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M46 65a4 4 0 0 0 8 0" stroke="var(--gold)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <line x1="42" y1="38" x2="58" y2="38" stroke="var(--gold-bright)" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
-          <h3 style="font-family:'Newsreader',serif;font-style:italic;font-size:22px;color:var(--text-dark);margin-bottom:8px;">You're all caught up.</h3>
-          <p style="font-size:13px;color:var(--text-light);">${activeFilter === 'unread' ? 'No unread notifications.' : 'No notifications to show.'}</p>
+          <h3 style="font-family:var(--serif);font-style:italic;font-size:22px;color:var(--text);margin-bottom:8px;">You're all caught up.</h3>
+          <p style="font-size:13px;color:var(--text-3);">${activeFilter === 'unread' ? 'No unread notifications.' : 'No notifications to show.'}</p>
         </div>
       `;
       return;
     }
     container.innerHTML = items.map(n => `
-      <div class="notif-item ${!n.read ? 'unread' : ''} type-${n.type || 'system'}" onclick="handleNotifClick(${n.id}, '${n.link || ''}')">
+      <div class="notif-item section-block ${!n.read ? 'unread' : ''} type-${n.type || 'system'}" onclick="handleNotifClick(${n.id}, '${n.link || ''}')">
         <div class="notif-icon ${getTypeClass(n.type)}">${typeIcon(n.type)}</div>
         <div style="flex:1;min-width:0;">
           <div class="notif-title">${n.title}</div>
@@ -227,7 +276,7 @@
       allNotifications = data.notifications || [];
       renderNotifications();
     } catch {
-      document.getElementById('notif-list').innerHTML = '<div class="card card-sm"><p style="color:var(--text-light);font-size:13px;">Could not load notifications.</p></div>';
+      document.getElementById('notif-list').innerHTML = '<div class="card card-sm"><p style="color:var(--text-3);font-size:13px;">Could not load notifications.</p></div>';
     }
   }
 
@@ -243,8 +292,19 @@
       document.getElementById('nav-dashboard').href = '/instructor-dashboard.html';
     }
     loadNotifications();
-    // Auto-refresh every 30 seconds
     setInterval(loadNotifications, 30000);
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.from('.page-header, .stat-card, .content-card', {
+    y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+  });
+  gsap.utils.toArray('.section-block, .card-row, tr').forEach(el => {
+    gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 88%' },
+      y: 16, opacity: 0, duration: 0.5, ease: 'power2.out' });
   });
 </script>
 </body>

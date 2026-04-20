@@ -5,60 +5,145 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
-    html, body { background: var(--parchment-light); overflow: hidden; }
+    :root {
+      --bg: #080706;
+      --bg-2: #0F0D0B;
+      --bg-card: #161412;
+      --bg-elevated: #1E1B17;
+      --gold: #C8A84B;
+      --gold-bright: #E8C96E;
+      --gold-dim: #7A6530;
+      --text: #F0E6D3;
+      --text-2: #B8A898;
+      --text-3: #6B5E50;
+      --serif: 'Cormorant Garamond', serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    html, body { background: var(--bg); overflow: hidden; color: var(--text); font-family: var(--sans); }
+
     .qt-shell { display: flex; flex-direction: column; height: 100vh; }
-    .qt-topbar { background: var(--parchment); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; height: 60px; gap: 20px; flex-shrink: 0; }
-    .qt-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 18px; font-weight: 600; color: var(--text-dark); flex: 1; }
-    .qt-progress { font-size: 13px; font-weight: 600; color: var(--text-mid); }
-    .qt-timer { font-size: 16px; font-weight: 700; color: var(--crimson); min-width: 64px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    .qt-topbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid rgba(200,168,75,0.12);
+      display: flex; align-items: center;
+      padding: 0 28px; height: 60px; gap: 20px; flex-shrink: 0;
+    }
+    .qt-title { font-family: var(--serif); font-style: italic; font-size: 18px; font-weight: 600; color: var(--text); flex: 1; }
+    .qt-progress { font-size: 13px; font-weight: 600; color: var(--text-2); }
+    .qt-timer { font-size: 16px; font-weight: 700; color: var(--gold); min-width: 64px; text-align: right; font-variant-numeric: tabular-nums; }
+
     .qt-body { display: flex; flex: 1; overflow: hidden; }
-    .qt-main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+
+    .qt-main { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; background: var(--bg-2); }
+
     .qt-question-wrap { width: 100%; max-width: 680px; }
-    .qt-question-num { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px; }
-    .qt-question-text { font-family: 'Newsreader', serif; font-size: 26px; font-weight: 600; color: var(--text-dark); line-height: 1.4; margin-bottom: 28px; }
-    .qt-option { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border: 2px solid var(--border); border-radius: var(--radius-lg); background: var(--parchment); cursor: pointer; margin-bottom: 10px; transition: all 0.15s ease; font-size: 15px; color: var(--text-dark); }
-    .qt-option:hover { border-color: rgba(139,46,38,0.3); background: var(--parchment-light); }
-    .qt-option.selected { border-color: var(--crimson); background: rgba(139,46,38,0.06); color: var(--crimson); font-weight: 600; }
-    .qt-option.correct { border-color: var(--forest); background: rgba(45,79,30,0.08); color: var(--forest); }
-    .qt-option.incorrect { border-color: var(--crimson); background: rgba(139,46,38,0.08); color: var(--crimson); opacity: 0.7; }
-    .qt-option-bullet { width: 24px; height: 24px; border-radius: 50%; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 700; }
-    .qt-short-input { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: var(--radius-lg); font-size: 15px; font-family: inherit; color: var(--text-dark); background: var(--parchment); outline: none; transition: border-color var(--transition); }
-    .qt-short-input:focus { border-color: var(--crimson); }
+    .qt-question-num { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+    .qt-question-text { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 28px; }
+
+    .qt-option {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px;
+      border: 2px solid rgba(200,168,75,0.1);
+      border-radius: var(--radius-lg, 12px);
+      background: var(--bg-card);
+      cursor: pointer; margin-bottom: 10px;
+      transition: all 0.15s ease;
+      font-size: 15px; color: var(--text);
+    }
+    .qt-option:hover { border-color: rgba(200,168,75,0.35); background: var(--bg-elevated); }
+    .qt-option.selected { border-color: var(--gold); background: rgba(200,168,75,0.1); color: var(--gold-bright); font-weight: 600; }
+    .qt-option.correct { border-color: rgba(100,200,100,0.5); background: rgba(100,200,100,0.08); color: #8ecf8e; }
+    .qt-option.incorrect { border-color: rgba(200,100,100,0.4); background: rgba(200,100,100,0.08); color: #cf8e8e; opacity: 0.8; }
+
+    .qt-option-bullet {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 11px; font-weight: 700;
+    }
+
+    .qt-short-input {
+      width: 100%; padding: 12px 16px;
+      border: 2px solid rgba(200,168,75,0.15);
+      border-radius: var(--radius-lg, 12px);
+      font-size: 15px; font-family: var(--sans);
+      color: var(--text); background: var(--bg-card);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .qt-short-input:focus {
+      border-color: rgba(200,168,75,0.4);
+      box-shadow: 0 0 0 3px rgba(200,168,75,0.15);
+    }
+    .qt-short-input::placeholder { color: var(--text-3); }
+
     .qt-nav { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
-    .qt-sidebar { width: 200px; flex-shrink: 0; background: var(--parchment); border-left: 1px solid var(--border); padding: 20px; overflow-y: auto; }
-    .qt-grid-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px; }
+
+    .qt-sidebar {
+      width: 200px; flex-shrink: 0;
+      background: var(--bg-card);
+      border-left: 1px solid rgba(200,168,75,0.1);
+      padding: 20px; overflow-y: auto;
+    }
+    .qt-grid-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
     .qt-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .qt-grid-btn { width: 32px; height: 32px; border-radius: 6px; border: 1.5px solid var(--border); background: var(--parchment-dark); font-size: 12px; font-weight: 600; color: var(--text-light); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s ease; }
-    .qt-grid-btn.answered { background: var(--forest); border-color: var(--forest); color: var(--parchment); }
-    .qt-grid-btn.current { border-color: var(--crimson); color: var(--crimson); }
+    .qt-grid-btn {
+      width: 32px; height: 32px; border-radius: 6px;
+      border: 1.5px solid rgba(200,168,75,0.15);
+      background: var(--bg-elevated);
+      font-size: 12px; font-weight: 600; color: var(--text-3);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s ease;
+    }
+    .qt-grid-btn.answered { background: rgba(200,168,75,0.2); border-color: var(--gold); color: var(--gold-bright); }
+    .qt-grid-btn.current { border-color: var(--gold-bright); color: var(--gold-bright); background: rgba(232,201,110,0.1); }
+
     /* Results screen */
     .qt-results { width: 100%; max-width: 680px; text-align: center; }
     .score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
     .score-ring-wrap svg { transform: rotate(-90deg); }
     .score-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .score-ring-pct { font-family: 'Newsreader', serif; font-size: 36px; font-weight: 600; color: var(--text-dark); line-height: 1; }
-    .score-ring-label { font-size: 11px; color: var(--text-light); margin-top: 4px; font-weight: 600; letter-spacing: 0.08em; }
+    .score-ring-pct { font-family: var(--serif); font-size: 36px; font-weight: 600; color: var(--text); line-height: 1; }
+    .score-ring-label { font-size: 11px; color: var(--text-3); margin-top: 4px; font-weight: 600; letter-spacing: 0.08em; }
+
     .result-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 99px; font-weight: 700; font-size: 15px; margin-bottom: 24px; }
-    .result-badge.passed { background: rgba(45,79,30,0.12); color: var(--forest); }
-    .result-badge.failed { background: rgba(139,46,38,0.12); color: var(--crimson); }
-    .breakdown-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: var(--parchment); border-radius: var(--radius-lg); margin-bottom: 8px; text-align: left; }
+    .result-badge.passed { background: rgba(200,168,75,0.12); color: var(--gold); border: 1px solid rgba(200,168,75,0.25); }
+    .result-badge.failed { background: rgba(200,100,100,0.1); color: #cf8e8e; border: 1px solid rgba(200,100,100,0.2); }
+
+    .breakdown-item {
+      display: flex; align-items: flex-start; gap: 12px; padding: 14px;
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.1);
+      border-radius: var(--radius-lg, 12px);
+      margin-bottom: 8px; text-align: left;
+    }
     .breakdown-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; font-weight: 700; }
-    .breakdown-icon.ok { background: rgba(45,79,30,0.12); color: var(--forest); }
-    .breakdown-icon.wrong { background: rgba(139,46,38,0.12); color: var(--crimson); }
-    .breakdown-q { font-size: 13px; color: var(--text-dark); font-weight: 500; margin-bottom: 4px; }
-    .breakdown-ans { font-size: 12px; color: var(--text-light); }
-    .breakdown-ans .correct-ans { color: var(--forest); font-weight: 600; }
+    .breakdown-icon.ok { background: rgba(200,168,75,0.15); color: var(--gold); }
+    .breakdown-icon.wrong { background: rgba(200,100,100,0.12); color: #cf8e8e; }
+    .breakdown-q { font-size: 13px; color: var(--text); font-weight: 500; margin-bottom: 4px; }
+    .breakdown-ans { font-size: 12px; color: var(--text-3); }
+    .breakdown-ans .correct-ans { color: var(--gold); font-weight: 600; }
+
+    /* Button overrides */
+    .btn-primary { background: var(--gold); color: var(--bg); border: none; font-family: var(--sans); font-weight: 600; }
+    .btn-primary:hover { background: var(--gold-bright); }
+    .btn-outline { background: transparent; border: 1.5px solid rgba(200,168,75,0.3); color: var(--text-2); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-ghost { background: transparent; border: 1px solid rgba(200,168,75,0.15); color: var(--text-2); }
+    .btn-ghost:hover { border-color: rgba(200,168,75,0.3); color: var(--text); }
   </style>
 </head>
 <body>
 <div class="qt-shell">
   <!-- Loading state -->
-  <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;">
+  <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;background:var(--bg);">
     <div class="spinner spinner-lg"></div>
-    <p style="color:var(--text-light);font-size:14px;">Loading quiz…</p>
+    <p style="color:var(--text-3);font-size:14px;">Loading quiz…</p>
   </div>
 
   <!-- Quiz UI (hidden until loaded) -->
@@ -80,12 +165,12 @@
   </div>
 
   <!-- Results screen (hidden until submitted) -->
-  <div id="results-screen" style="display:none;flex:1;overflow-y:auto;padding:40px;align-items:center;justify-content:center;flex-direction:column;">
+  <div id="results-screen" style="display:none;flex:1;overflow-y:auto;padding:40px;align-items:center;justify-content:center;flex-direction:column;background:var(--bg-2);">
     <div class="qt-results">
       <div class="score-ring-wrap">
         <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="64" fill="none" stroke="var(--parchment-dark)" stroke-width="14"/>
-          <circle cx="80" cy="80" r="64" fill="none" stroke="var(--crimson)" stroke-width="14" stroke-linecap="round"
+          <circle cx="80" cy="80" r="64" fill="none" stroke="var(--bg-elevated)" stroke-width="14"/>
+          <circle cx="80" cy="80" r="64" fill="none" stroke="var(--gold)" stroke-width="14" stroke-linecap="round"
             stroke-dasharray="402" stroke-dashoffset="402" id="score-circle" style="transition:stroke-dashoffset 1.2s ease;"/>
         </svg>
         <div class="score-ring-text">
@@ -94,7 +179,7 @@
         </div>
       </div>
       <div id="result-badge-wrap"></div>
-      <p id="result-desc" style="color:var(--text-light);font-size:14px;margin-bottom:32px;"></p>
+      <p id="result-desc" style="color:var(--text-2);font-size:14px;margin-bottom:32px;"></p>
       <div id="breakdown-list" style="margin-bottom:32px;"></div>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
         <button class="btn btn-primary" onclick="window.location.href='/course-catalog.html'">Back to Courses</button>
@@ -128,7 +213,6 @@
       quiz = data.quiz;
       questions = data.questions || [];
       if (!questions.length) { showError('This quiz has no questions yet.'); return; }
-      // Start attempt
       const startData = await api.post(`/api/quizzes/${qid}/start`, {});
       attemptId = startData.attempt_id;
       initQuiz();
@@ -141,8 +225,8 @@
     document.getElementById('loading-screen').innerHTML = `
       <div style="text-align:center;padding:40px;">
         <div style="font-size:40px;margin-bottom:16px;">⚠️</div>
-        <h2 style="font-family:'Newsreader',serif;font-style:italic;font-size:24px;margin-bottom:8px;">Unable to load quiz</h2>
-        <p style="color:var(--text-light);font-size:14px;margin-bottom:20px;">${msg}</p>
+        <h2 style="font-family:var(--serif);font-style:italic;font-size:24px;margin-bottom:8px;color:var(--text);">Unable to load quiz</h2>
+        <p style="color:var(--text-3);font-size:14px;margin-bottom:20px;">${msg}</p>
         <a href="/course-catalog.html" class="btn btn-primary">Back to Courses</a>
       </div>
     `;
@@ -171,7 +255,7 @@
     const m = Math.floor(timeLeft / 60);
     const s = timeLeft % 60;
     document.getElementById('qt-timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    if (timeLeft <= 60) document.getElementById('qt-timer').style.color = 'var(--crimson)';
+    if (timeLeft <= 60) document.getElementById('qt-timer').style.color = '#cf8e8e';
   }
 
   function renderGrid() {
@@ -190,7 +274,7 @@
       <div class="qt-question-num">Question ${idx+1} of ${questions.length} · ${q.points} point${q.points !== 1 ? 's' : ''}</div>
       <div class="qt-question-text">${q.question_text}</div>
       ${renderAnswerUI(q)}
-      ${q.audio_url && q.question_type === 'ear' ? `<audio controls src="${q.audio_url}" style="width:100%;margin-bottom:20px;"></audio>` : ''}
+      ${q.audio_url && q.question_type === 'ear' ? `<audio controls src="${q.audio_url}" style="width:100%;margin-bottom:20px;filter:invert(0.9);"></audio>` : ''}
       <div class="qt-nav">
         ${idx > 0 ? `<button class="btn btn-ghost" onclick="showQuestion(${idx-1})">← Previous</button>` : '<div></div>'}
         ${idx < questions.length - 1
@@ -233,10 +317,8 @@
   function selectAnswer(qid, value, idx) {
     answers[qid] = value;
     renderGrid();
-    // Re-render just the options
     const q = questions.find(q => q.id === qid);
     if (!q) return;
-    const letters = ['A','B','C','D','E'];
     if (q.question_type === 'mcq') {
       document.querySelectorAll('.qt-option').forEach((el, i) => {
         el.classList.toggle('selected', i == value);
@@ -269,7 +351,6 @@
 
     const pct = data.score || 0;
     document.getElementById('result-pct').textContent = pct + '%';
-    // Animate ring: circumference = 2π×64 ≈ 402
     setTimeout(() => {
       const offset = 402 - (402 * pct / 100);
       document.getElementById('score-circle').style.strokeDashoffset = offset;
@@ -285,16 +366,15 @@
       ? `Congratulations! You passed with ${pct}%. Keep up the excellent work.`
       : `You scored ${pct}%. The passing score is ${quiz.passing_score}%. Review and try again.`;
 
-    // Per-question breakdown
     if (data.results) {
       const breakdownEl = document.getElementById('breakdown-list');
-      breakdownEl.innerHTML = '<h3 style="font-family:\'Newsreader\',serif;font-style:italic;font-size:20px;margin-bottom:16px;text-align:left;">Question Breakdown</h3>' +
+      breakdownEl.innerHTML = '<h3 style="font-family:var(--serif);font-style:italic;font-size:20px;margin-bottom:16px;text-align:left;color:var(--text);">Question Breakdown</h3>' +
         questions.map((q, i) => {
           const result = data.results[q.id];
           if (!result) return '';
           const ok = result.correct;
           return `
-            <div class="breakdown-item">
+            <div class="breakdown-item section-block">
               <div class="breakdown-icon ${ok ? 'ok' : 'wrong'}">${ok ? '✓' : '✗'}</div>
               <div>
                 <div class="breakdown-q">Q${i+1}: ${q.question_text}</div>
@@ -302,13 +382,25 @@
                   Your answer: <strong>${result.student_answer !== undefined ? result.student_answer : '—'}</strong>
                   ${result.correct_answer !== undefined ? ` · Correct: <span class="correct-ans">${result.correct_answer}</span>` : ''}
                 </div>
-                ${result.explanation ? `<div style="font-size:12px;color:var(--forest);margin-top:4px;font-style:italic;">${result.explanation}</div>` : ''}
+                ${result.explanation ? `<div style="font-size:12px;color:var(--gold-dim);margin-top:4px;font-style:italic;">${result.explanation}</div>` : ''}
               </div>
             </div>
           `;
         }).join('');
     }
   }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.from('.page-header, .stat-card, .content-card', {
+    y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+  });
+  gsap.utils.toArray('.section-block, .card-row, tr').forEach(el => {
+    gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 88%' },
+      y: 16, opacity: 0, duration: 0.5, ease: 'power2.out' });
+  });
 </script>
 </body>
 </html>

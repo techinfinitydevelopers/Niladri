@@ -34,24 +34,78 @@
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
 
-  /* Legacy aliases so any unrewritten pages don't break */
+  /* ── Legacy aliases remapped to dark theme ── */
   --sidebar-w: 240px;
-  --crimson: #8B2E26;
-  --crimson-dark: #6B2218;
-  --crimson-light: #A83B32;
-  --forest: #2D5A27;
-  --parchment: #F0E6D3;
-  --parchment-dark: #1E1B17;
-  --parchment-light: #252119;
-  --text-dark: #F0E6D3;
-  --text-mid: #B8A898;
-  --text-light: #6B5E50;
-  --gold-dark: #7A6530;
-  --gold-light: #E8C96E;
-  --border: rgba(200,168,75,0.08);
+  --crimson:        var(--gold);
+  --crimson-dark:   var(--gold-dim);
+  --crimson-light:  var(--gold-bright);
+  --forest:         #2D5A27;
+  /* parchment used as BG → dark surfaces; used as text → cream text */
+  --parchment:      #161412;   /* was #F0E6D3 — now dark card bg */
+  --parchment-dark: #0F0D0B;   /* darker surface */
+  --parchment-light:#1E1B17;   /* elevated surface */
+  --text-dark:      #F0E6D3;   /* cream text — unchanged */
+  --text-mid:       #B8A898;
+  --text-light:     #6B5E50;
+  --gold-dark:      #7A6530;
+  --gold-light:     #E8C96E;
+  --border:         rgba(200,168,75,0.12);
+  --border-gold:    rgba(200,168,75,0.30);
   --radius: 8px;
   --radius-lg: 14px;
 }
+
+/* ── Dark form inputs (global) ── */
+input:not([type=checkbox]):not([type=radio]):not([type=range]),
+textarea, select {
+  background: var(--bg-2) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(200,168,75,0.15) !important;
+  border-radius: var(--r-sm);
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(200,168,75,0.12) !important;
+}
+input::placeholder, textarea::placeholder { color: var(--text-3) !important; }
+
+/* ── GSAP will-change helpers ── */
+[data-gsap] { will-change: transform, opacity; }
+
+/* ── Gold cursor dot (injected by GSAP pages) ── */
+#gsap-cursor {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  transition: width .2s, height .2s, opacity .2s;
+}
+#gsap-cursor.large { width: 40px; height: 40px; opacity: .4; }
+
+/* ── Utility: gold badge ── */
+.badge-gold {
+  display: inline-block; padding: 2px 10px;
+  background: rgba(200,168,75,.1);
+  border: 1px solid rgba(200,168,75,.25);
+  border-radius: 20px;
+  font-size: 11px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold);
+}
+/* ── Utility: dark card ── */
+.dark-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(200,168,75,.1);
+  border-radius: var(--r-md);
+  padding: 24px;
+  transition: border-color .2s, transform .2s;
+}
+.dark-card:hover { border-color: rgba(200,168,75,.3); transform: translateY(-2px); }
+
+/* ── Utility: gold stat number ── */
+.stat-gold { font-family: var(--serif); font-size: 42px; font-weight: 600; color: var(--gold); line-height: 1; }
+.stat-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); margin-top: 4px; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

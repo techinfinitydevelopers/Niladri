@@ -3,80 +3,296 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Manager — The Archive</title>
+  <title>Course Manager — The Foundation Room</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <style>
+    :root {
+      --bg: #080706;
+      --bg-2: #0F0D0B;
+      --bg-card: #161412;
+      --bg-elevated: #1E1B17;
+      --gold: #C8A84B;
+      --gold-bright: #E8C96E;
+      --gold-dim: #7A6530;
+      --text: #F0E6D3;
+      --text-2: #B8A898;
+      --text-3: #6B5E50;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Shell layout ── */
+    .shell {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background: var(--bg);
+      border-right: 1px solid rgba(200,168,75,0.08);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-brand {
+      padding: 28px 20px 24px;
+      border-bottom: 1px solid rgba(200,168,75,0.08);
+    }
+    .brand-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .sidebar-nav {
+      padding: 16px 10px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-3);
+      text-decoration: none;
+      transition: all 0.16s ease;
+      margin-bottom: 2px;
+      border-left: 2px solid transparent;
+    }
+    .nav-item:hover {
+      color: var(--text-2);
+      background: rgba(200,168,75,0.05);
+    }
+    .nav-item.active {
+      color: var(--gold);
+      background: rgba(200,168,75,0.08);
+      border-left-color: var(--gold);
+    }
+    .nav-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(200,168,75,0.08);
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .sidebar-user:hover { background: rgba(200,168,75,0.06); }
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(200,168,75,0.15);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .sidebar-user-info { flex: 1; min-width: 0; }
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-role { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+
+    /* ── Main wrap ── */
+    .main-wrap {
+      flex: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: rgba(8,7,6,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200,168,75,0.08);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+      z-index: 90;
+    }
+    .topbar-title {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      font-style: italic;
+    }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(200,168,75,0.06);
+      border: 1px solid rgba(200,168,75,0.1);
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .icon-btn:hover { color: var(--gold); background: rgba(200,168,75,0.1); }
+    .topbar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(200,168,75,0.15);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Main content ── */
+    .main-content {
+      flex: 1;
+      overflow: hidden;
+      padding: 20px 24px;
+    }
+
     /* ── Two-panel layout ── */
     .cm-layout {
       display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 20px;
-      height: calc(100vh - var(--topbar-height) - 64px);
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+      height: 100%;
       min-height: 0;
     }
 
     /* ── Course list panel ── */
     .course-list-panel {
-      background: var(--parchment);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.1);
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
     .panel-head {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
+      padding: 14px;
+      border-bottom: 1px solid rgba(200,168,75,0.08);
       flex-shrink: 0;
     }
     .panel-search-row {
       display: flex;
       gap: 8px;
-      margin-bottom: 10px;
+      align-items: center;
     }
     .panel-search {
       flex: 1;
       display: flex;
       align-items: center;
       gap: 8px;
-      background: var(--parchment-dark);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--bg-2);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: 8px;
       padding: 7px 12px;
+      transition: border-color 0.18s;
+    }
+    .panel-search:focus-within {
+      border-color: rgba(200,168,75,0.3);
     }
     .panel-search input {
       background: none;
       border: none;
       outline: none;
       font-size: 13px;
-      color: var(--text-dark);
+      font-family: var(--sans);
+      color: var(--text);
       width: 100%;
     }
-    .panel-search svg { color: var(--text-light); flex-shrink: 0; }
+    .panel-search input::placeholder { color: var(--text-3); }
+    .panel-search svg { color: var(--text-3); flex-shrink: 0; }
     .course-list-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 8px;
     }
+    .course-list-scroll::-webkit-scrollbar { width: 4px; }
+    .course-list-scroll::-webkit-scrollbar-track { background: transparent; }
+    .course-list-scroll::-webkit-scrollbar-thumb { background: rgba(200,168,75,0.15); border-radius: 2px; }
 
     /* ── Course list card ── */
     .course-list-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px;
-      border-radius: var(--radius);
+      padding: 11px;
+      border-radius: 9px;
       cursor: pointer;
-      transition: background 0.15s ease;
-      margin-bottom: 4px;
+      transition: all 0.15s ease;
+      margin-bottom: 3px;
+      border: 1px solid transparent;
     }
-    .course-list-item:hover { background: var(--parchment-dark); }
-    .course-list-item.selected { background: rgba(139,46,38,0.08); border: 1.5px solid rgba(139,46,38,0.20); }
+    .course-list-item:hover {
+      background: rgba(200,168,75,0.05);
+      border-color: rgba(200,168,75,0.08);
+    }
+    .course-list-item.selected {
+      background: rgba(200,168,75,0.08);
+      border-color: rgba(200,168,75,0.2);
+    }
     .course-swatch {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 8px;
       flex-shrink: 0;
     }
@@ -84,15 +300,15 @@
     .course-list-title {
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-dark);
+      color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .course-list-meta {
       font-size: 11px;
-      color: var(--text-light);
-      margin-top: 2px;
+      color: var(--text-3);
+      margin-top: 3px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -101,20 +317,21 @@
     .empty-state {
       text-align: center;
       padding: 40px 20px;
-      color: var(--text-light);
+      color: var(--text-3);
     }
-    .empty-state svg { color: var(--parchment-dark); margin: 0 auto 12px; display: block; }
+    .empty-state svg { margin: 0 auto 12px; display: block; }
     .empty-state p { font-size: 13px; }
 
     /* ── Editor panel ── */
     .editor-panel {
-      background: var(--parchment);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.1);
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
+      min-height: 0;
     }
     .editor-placeholder {
       display: flex;
@@ -122,10 +339,10 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-      color: var(--text-light);
+      color: var(--text-3);
       gap: 12px;
     }
-    .editor-placeholder svg { color: rgba(0,0,0,0.12); }
+    .editor-placeholder svg { color: rgba(200,168,75,0.12); }
     .editor-placeholder p { font-size: 14px; }
 
     .editor-inner {
@@ -135,46 +352,47 @@
       overflow: hidden;
     }
     .editor-topbar {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(200,168,75,0.08);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
     .editor-course-title {
-      font-family: 'Newsreader', serif;
+      font-family: var(--serif);
       font-style: italic;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 600;
-      color: var(--text-dark);
+      color: var(--text);
     }
 
-    /* ── Editor tabs ── */
+    /* ── Editor tab bar ── */
     .editor-tab-bar {
       display: flex;
       gap: 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(200,168,75,0.08);
       flex-shrink: 0;
-      background: var(--parchment-dark);
+      background: var(--bg-2);
     }
     .editor-tab {
       padding: 11px 20px;
       font-size: 13px;
-      font-weight: 600;
-      color: var(--text-light);
+      font-weight: 500;
+      font-family: var(--sans);
+      color: var(--text-3);
       border: none;
       background: transparent;
       cursor: pointer;
       border-bottom: 2.5px solid transparent;
       transition: all 0.15s ease;
-      font-family: 'Work Sans', sans-serif;
     }
-    .editor-tab:hover { color: var(--text-dark); }
+    .editor-tab:hover { color: var(--text-2); }
     .editor-tab.active {
-      color: var(--crimson);
-      border-bottom-color: var(--crimson);
-      background: var(--parchment);
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+      background: var(--bg-card);
+      font-weight: 600;
     }
 
     .editor-body {
@@ -182,8 +400,93 @@
       overflow-y: auto;
       padding: 20px;
     }
+    .editor-body::-webkit-scrollbar { width: 4px; }
+    .editor-body::-webkit-scrollbar-track { background: transparent; }
+    .editor-body::-webkit-scrollbar-thumb { background: rgba(200,168,75,0.15); border-radius: 2px; }
     .editor-tab-panel { display: none; }
     .editor-tab-panel.active { display: block; }
+
+    /* ── Form elements ── */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 7px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-2);
+      border: 1px solid rgba(200,168,75,0.15);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: var(--sans);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      appearance: none;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-3); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(200,168,75,0.1);
+    }
+    .form-select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B5E50' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    .form-select option { background: var(--bg-elevated); color: var(--text); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--sans);
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s ease;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--gold); color: #0a0806; }
+    .btn-primary:hover { background: var(--gold-bright); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(200,168,75,0.3);
+      color: var(--gold);
+    }
+    .btn-outline:hover { background: rgba(200,168,75,0.08); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(240,230,211,0.12);
+      color: var(--text-2);
+    }
+    .btn-ghost:hover { background: rgba(240,230,211,0.05); }
+    .btn-danger-ghost {
+      background: transparent;
+      border: 1px solid rgba(220,70,70,0.25);
+      color: #e08080;
+    }
+    .btn-danger-ghost:hover { background: rgba(220,70,70,0.08); }
+    .btn-sm { padding: 6px 14px; font-size: 12px; }
 
     /* ── Color swatch picker ── */
     .swatch-row {
@@ -194,48 +497,54 @@
     .swatch-preset {
       width: 28px;
       height: 28px;
-      border-radius: 6px;
+      border-radius: 7px;
       cursor: pointer;
       border: 2px solid transparent;
       transition: all 0.15s ease;
       flex-shrink: 0;
     }
-    .swatch-preset:hover, .swatch-preset.selected { border-color: var(--text-dark); transform: scale(1.12); }
-    .swatch-input-wrap {
-      position: relative;
+    .swatch-preset:hover { transform: scale(1.12); }
+    .swatch-preset.selected {
+      border-color: var(--gold);
+      transform: scale(1.1);
+      box-shadow: 0 0 0 2px rgba(200,168,75,0.3);
     }
     .swatch-input-wrap input[type="color"] {
       width: 36px;
       height: 28px;
-      border-radius: 6px;
-      border: 2px solid var(--border);
+      border-radius: 7px;
+      border: 2px solid rgba(200,168,75,0.2);
       cursor: pointer;
       padding: 0 2px;
       background: none;
     }
 
-    /* ── Chapter/Lesson Accordion ── */
-    .chapter-wrap { margin-bottom: 10px; }
+    /* ── Chapter/Lesson accordion ── */
+    .chapter-wrap { margin-bottom: 8px; }
     .chapter-header {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: var(--parchment-dark);
-      border-radius: var(--radius);
-      padding: 10px 12px;
+      background: var(--bg-2);
+      border: 1px solid rgba(200,168,75,0.08);
+      border-radius: 9px;
+      padding: 9px 12px;
+      transition: border-color 0.15s;
     }
-    .chapter-drag { color: var(--text-light); cursor: grab; flex-shrink: 0; }
+    .chapter-header:hover { border-color: rgba(200,168,75,0.18); }
+    .chapter-drag { color: var(--text-3); cursor: grab; flex-shrink: 0; }
     .chapter-toggle-btn {
       background: none;
       border: none;
       cursor: pointer;
-      color: var(--text-light);
+      color: var(--text-3);
       display: flex;
       align-items: center;
-      transition: transform 0.15s;
+      transition: transform 0.15s, color 0.15s;
       padding: 0;
     }
-    .chapter-toggle-btn.open { transform: rotate(90deg); }
+    .chapter-toggle-btn:hover { color: var(--gold); }
+    .chapter-toggle-btn.open { transform: rotate(90deg); color: var(--gold); }
     .chapter-title-input {
       flex: 1;
       background: none;
@@ -243,12 +552,12 @@
       outline: none;
       font-size: 14px;
       font-weight: 600;
-      color: var(--text-dark);
-      font-family: 'Work Sans', sans-serif;
+      color: var(--text);
+      font-family: var(--sans);
       min-width: 0;
     }
     .chapter-title-input:focus {
-      background: white;
+      background: rgba(200,168,75,0.06);
       border-radius: 4px;
       padding: 2px 6px;
     }
@@ -260,31 +569,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-light);
+      color: var(--text-3);
       transition: all 0.14s;
       background: none;
       border: none;
       cursor: pointer;
     }
-    .icon-action:hover { background: rgba(0,0,0,0.08); color: var(--text-dark); }
-    .icon-action.danger:hover { background: rgba(139,46,38,0.10); color: var(--crimson); }
+    .icon-action:hover { background: rgba(200,168,75,0.08); color: var(--gold); }
+    .icon-action.danger:hover { background: rgba(220,70,70,0.1); color: #e08080; }
 
-    .chapter-lessons {
-      padding: 8px 0 4px 28px;
-      display: none;
-    }
+    .chapter-lessons { padding: 6px 0 4px 26px; display: none; }
     .chapter-lessons.open { display: block; }
 
     .lesson-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 10px;
-      border-radius: var(--radius);
+      padding: 6px 10px;
+      border-radius: 7px;
       transition: background 0.13s;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
-    .lesson-row:hover { background: var(--parchment-dark); }
+    .lesson-row:hover { background: rgba(200,168,75,0.05); }
     .lesson-type-icon { font-size: 14px; flex-shrink: 0; }
     .lesson-title-input {
       flex: 1;
@@ -292,43 +598,50 @@
       border: none;
       outline: none;
       font-size: 13px;
-      color: var(--text-dark);
-      font-family: 'Work Sans', sans-serif;
+      color: var(--text-2);
+      font-family: var(--sans);
       min-width: 0;
     }
     .lesson-title-input:focus {
-      background: white;
+      background: rgba(200,168,75,0.06);
       border-radius: 4px;
       padding: 2px 6px;
+      color: var(--text);
     }
     .lesson-duration {
       width: 56px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      border: 1px solid rgba(200,168,75,0.15);
+      border-radius: 5px;
       padding: 3px 6px;
       font-size: 12px;
-      font-family: 'Work Sans', sans-serif;
-      color: var(--text-mid);
-      background: white;
+      font-family: var(--sans);
+      color: var(--text-2);
+      background: var(--bg-2);
       text-align: center;
+      outline: none;
     }
+    .lesson-duration:focus { border-color: var(--gold); }
     .lesson-type-select {
       width: 88px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 3px 4px;
+      border: 1px solid rgba(200,168,75,0.15);
+      border-radius: 5px;
+      padding: 3px 6px;
       font-size: 11px;
-      font-family: 'Work Sans', sans-serif;
-      color: var(--text-mid);
-      background: white;
+      font-family: var(--sans);
+      color: var(--text-2);
+      background: var(--bg-2);
+      outline: none;
+      cursor: pointer;
     }
-    .add-lesson-row {
-      padding: 4px 0 4px 10px;
-    }
+    .lesson-type-select:focus { border-color: var(--gold); }
+    .lesson-type-select option { background: var(--bg-elevated); }
+
+    .add-lesson-row { padding: 4px 0 4px 10px; }
     .add-lesson-btn {
       font-size: 12px;
-      color: var(--forest);
+      color: var(--gold-dim);
       font-weight: 600;
+      font-family: var(--sans);
       background: none;
       border: none;
       cursor: pointer;
@@ -336,22 +649,23 @@
       align-items: center;
       gap: 5px;
       padding: 4px 8px;
-      border-radius: 4px;
+      border-radius: 5px;
+      transition: all 0.15s;
     }
-    .add-lesson-btn:hover { background: rgba(45,79,30,0.10); }
+    .add-lesson-btn:hover { background: rgba(200,168,75,0.08); color: var(--gold); }
 
-    .add-chapter-row {
-      margin-top: 12px;
-    }
+    .add-chapter-row { margin-top: 12px; }
 
     /* ── Assignment cards ── */
     .assignment-card {
-      background: var(--parchment-dark);
-      border-radius: var(--radius);
+      background: var(--bg-2);
+      border: 1px solid rgba(200,168,75,0.1);
+      border-radius: 10px;
       padding: 14px 16px;
-      margin-bottom: 10px;
-      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      transition: border-color 0.18s;
     }
+    .assignment-card:hover { border-color: rgba(200,168,75,0.22); }
     .assignment-card-header {
       display: flex;
       align-items: flex-start;
@@ -362,31 +676,63 @@
     .assignment-title {
       font-size: 14px;
       font-weight: 600;
-      color: var(--text-dark);
+      color: var(--text);
     }
     .assignment-desc {
       font-size: 12px;
-      color: var(--text-light);
+      color: var(--text-3);
       line-height: 1.55;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      margin-top: 3px;
     }
     .assignment-meta {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
-      margin-top: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .badge-gold {
+      background: rgba(200,168,75,0.12);
+      color: var(--gold);
+      border: 1px solid rgba(200,168,75,0.2);
+    }
+    .badge-gray {
+      background: rgba(240,230,211,0.06);
+      color: var(--text-2);
+      border: 1px solid rgba(240,230,211,0.1);
+    }
+    .badge-green {
+      background: rgba(80,160,80,0.12);
+      color: #88c888;
+      border: 1px solid rgba(80,160,80,0.2);
+    }
+    .badge-crimson {
+      background: rgba(200,70,70,0.12);
+      color: #e08080;
+      border: 1px solid rgba(200,70,70,0.2);
     }
 
     /* ── Assignment drawer ── */
     .drawer-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(17,16,9,0.40);
+      background: rgba(8,7,6,0.55);
       z-index: 50;
       display: none;
+      backdrop-filter: blur(2px);
     }
     .drawer-overlay.open { display: block; }
     .assignment-drawer {
@@ -395,48 +741,50 @@
       right: -100%;
       width: 460px;
       height: 100%;
-      background: var(--parchment);
-      box-shadow: -4px 0 24px rgba(0,0,0,0.18);
+      background: var(--bg-elevated);
+      border-left: 1px solid rgba(200,168,75,0.12);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
       z-index: 60;
-      transition: right 0.22s ease;
-      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      transition: right 0.24s ease;
       overflow: hidden;
     }
     .assignment-drawer.open { right: 0; }
     .drawer-head {
       padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(200,168,75,0.08);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
     .drawer-title {
-      font-family: 'Newsreader', serif;
+      font-family: var(--serif);
       font-style: italic;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 600;
-      color: var(--text-dark);
+      color: var(--text);
     }
     .drawer-body {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
     }
+    .drawer-body::-webkit-scrollbar { width: 4px; }
+    .drawer-body::-webkit-scrollbar-thumb { background: rgba(200,168,75,0.15); border-radius: 2px; }
     .drawer-foot {
       padding: 14px 20px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(200,168,75,0.08);
       display: flex;
       gap: 10px;
       flex-shrink: 0;
     }
 
-    /* ── Radio group ── */
+    /* ── Radio / check groups ── */
     .radio-group {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
     }
     .radio-item {
@@ -444,57 +792,150 @@
       align-items: center;
       gap: 6px;
       font-size: 13px;
-      color: var(--text-mid);
+      color: var(--text-2);
       font-weight: 500;
       cursor: pointer;
     }
-    .radio-item input[type="radio"] {
-      accent-color: var(--crimson);
+    .radio-item input[type="radio"] { accent-color: var(--gold); cursor: pointer; }
+    .check-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: var(--text-2);
+      font-weight: 500;
       cursor: pointer;
     }
+    .check-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    /* ── Toggle switch ── */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .toggle-label { font-size: 13px; font-weight: 500; color: var(--text-2); }
+    .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 99px;
+      background: rgba(200,168,75,0.1);
+      border: 1.5px solid rgba(200,168,75,0.2);
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--gold); border-color: var(--gold); }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--bg-2);
+      top: 50%;
+      left: 2px;
+      transform: translateY(-50%);
+      transition: left 0.18s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+    .toggle input:checked + .toggle-track::after { left: 20px; background: #0a0806; }
 
     /* ── Confirm Modal ── */
     .confirm-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(17,16,9,0.65);
+      background: rgba(8,7,6,0.75);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 400;
       animation: fadeIn 0.14s ease;
+      backdrop-filter: blur(4px);
     }
     .confirm-modal {
-      background: var(--parchment);
-      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200,168,75,0.15);
+      border-radius: 14px;
       padding: 28px;
       max-width: 380px;
       width: 100%;
-      box-shadow: var(--shadow-lg);
-      animation: scaleIn 0.16s ease;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      animation: scaleIn 0.18s ease;
     }
     .confirm-title {
-      font-family: 'Newsreader', serif;
+      font-family: var(--serif);
       font-style: italic;
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 600;
-      color: var(--text-dark);
+      color: var(--text);
       margin-bottom: 10px;
     }
     .confirm-body {
       font-size: 13px;
-      color: var(--text-mid);
+      color: var(--text-2);
       line-height: 1.55;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
+
+    /* ── Toasts ── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid rgba(200,168,75,0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      max-width: 360px;
+    }
+    .toast.error { border-color: rgba(220,70,70,0.3); color: #f08080; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(200,168,75,0.15);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 <div class="shell">
-  <!-- Sidebar -->
+
+  <!-- ── Sidebar ── -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-title">The Archive</div>
+      <div class="brand-title">The Foundation Room</div>
       <div class="brand-sub">Instructor Portal</div>
     </div>
     <nav class="sidebar-nav">
@@ -519,7 +960,7 @@
         Archive
       </a>
       <a href="/admin-panel.html" class="nav-item">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
         Admin Panel
       </a>
     </nav>
@@ -534,9 +975,9 @@
     </div>
   </aside>
 
-  <!-- Main -->
+  <!-- ── Main ── -->
   <div class="main-wrap">
-    <header class="topbar">
+    <header class="topbar" id="topbar">
       <div class="topbar-title">Course Manager</div>
       <div class="topbar-actions">
         <button class="icon-btn" title="Notifications">
@@ -546,11 +987,11 @@
       </div>
     </header>
 
-    <main class="main-content" style="overflow: hidden; padding: 20px 24px;">
+    <main class="main-content">
       <div class="cm-layout">
 
         <!-- ── Left: Course List ── -->
-        <div class="course-list-panel">
+        <div class="course-list-panel" id="course-list-panel">
           <div class="panel-head">
             <div class="panel-search-row">
               <div class="panel-search">
@@ -570,14 +1011,14 @@
         <!-- ── Right: Editor ── -->
         <div class="editor-panel" id="editor-panel">
           <div class="editor-placeholder" id="editor-placeholder">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             <p>Select a course or create a new one</p>
           </div>
 
           <div class="editor-inner" id="editor-inner" style="display:none;">
             <div class="editor-topbar">
               <div class="editor-course-title" id="editor-course-title">New Course</div>
-              <button class="btn btn-outline btn-sm" style="border-color:var(--crimson);color:var(--crimson);" onclick="confirmDeleteCourse()">
+              <button class="btn btn-danger-ghost btn-sm" onclick="confirmDeleteCourse()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                 Delete Course
               </button>
@@ -665,6 +1106,7 @@
                       <div class="swatch-preset" style="background:#1A3050;" data-color="#1A3050" onclick="selectSwatch(this)"></div>
                       <div class="swatch-preset" style="background:#5C4033;" data-color="#5C4033" onclick="selectSwatch(this)"></div>
                       <div class="swatch-preset" style="background:#1F3A2A;" data-color="#1F3A2A" onclick="selectSwatch(this)"></div>
+                      <div class="swatch-preset" style="background:#C8A84B;" data-color="#C8A84B" onclick="selectSwatch(this)"></div>
                       <div class="swatch-input-wrap">
                         <input type="color" id="ov-cover-color" value="#2D4F1E" oninput="syncColorInput(this)">
                       </div>
@@ -675,7 +1117,7 @@
                     <input class="form-input" id="ov-duration" type="number" min="1" placeholder="12">
                   </div>
                 </div>
-                <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+                <div style="display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(200,168,75,0.08);">
                   <button class="btn btn-primary" id="save-course-btn" onclick="saveCourse()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     Save Course
@@ -686,12 +1128,12 @@
               <!-- ── Chapters & Lessons Tab ── -->
               <div class="editor-tab-panel" id="etab-chapters">
                 <div id="chapters-container">
-                  <div style="text-align:center;padding:30px;color:var(--text-light);">
+                  <div style="text-align:center;padding:30px;color:var(--text-3);">
                     <p style="font-size:13px;">Save the course first to manage chapters.</p>
                   </div>
                 </div>
                 <div class="add-chapter-row">
-                  <button class="btn btn-outline-green btn-sm" onclick="addChapter()">
+                  <button class="btn btn-outline btn-sm" onclick="addChapter()">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     Add Chapter
                   </button>
@@ -701,7 +1143,7 @@
               <!-- ── Assignments Tab ── -->
               <div class="editor-tab-panel" id="etab-assignments">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                  <div style="font-size:13px;color:var(--text-light);" id="assign-count-label">Loading…</div>
+                  <div style="font-size:13px;color:var(--text-3);" id="assign-count-label">Loading…</div>
                   <button class="btn btn-primary btn-sm" onclick="openAssignmentDrawer(null)">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     New Assignment
@@ -771,7 +1213,7 @@
                 </div>
                 <div id="due-relative-wrap">
                   <input class="form-input" id="assign-due-days" type="number" min="1" placeholder="e.g. 7">
-                  <div style="font-size:11px;color:var(--text-light);margin-top:4px;">Days after student enrolls</div>
+                  <div style="font-size:11px;color:var(--text-3);margin-top:4px;">Days after student enrolls</div>
                 </div>
                 <div id="due-fixed-wrap" style="display:none;">
                   <input class="form-input" id="assign-due-date" type="date">
@@ -804,13 +1246,13 @@
   </div>
 </div>
 
-<!-- Delete Confirm Modal -->
+<!-- Delete Course Confirm Modal -->
 <div class="confirm-overlay" id="confirm-overlay" style="display:none;">
   <div class="confirm-modal">
     <div class="confirm-title">Delete Course?</div>
     <div class="confirm-body">This will permanently delete this course and all its chapters and lessons. This action cannot be undone.</div>
     <div style="display:flex;gap:10px;">
-      <button class="btn btn-primary" style="flex:1;background:var(--crimson);" onclick="deleteCourse()">Yes, Delete</button>
+      <button class="btn" style="flex:1;background:rgba(200,70,70,0.85);color:#fff;" onclick="deleteCourse()">Yes, Delete</button>
       <button class="btn btn-ghost" onclick="document.getElementById('confirm-overlay').style.display='none'">Cancel</button>
     </div>
   </div>
@@ -822,7 +1264,7 @@
     <div class="confirm-title">Delete Assignment?</div>
     <div class="confirm-body">This will permanently remove the assignment. Student submissions linked to it will remain in the system.</div>
     <div style="display:flex;gap:10px;">
-      <button class="btn btn-primary" style="flex:1;background:var(--crimson);" id="assign-confirm-btn">Yes, Delete</button>
+      <button class="btn" style="flex:1;background:rgba(200,70,70,0.85);color:#fff;" id="assign-confirm-btn">Yes, Delete</button>
       <button class="btn btn-ghost" onclick="document.getElementById('assign-confirm-overlay').style.display='none'">Cancel</button>
     </div>
   </div>
@@ -833,6 +1275,30 @@
 <script src="/assets/js/api.js"></script>
 <script src="/assets/js/auth-guard.js"></script>
 <script>
+  // ── GSAP init ──
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Staggered entrance
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('#sidebar', { x: -28, opacity: 0, duration: 0.55 })
+      .from('#topbar', { y: -20, opacity: 0, duration: 0.4 }, '-=0.25')
+      .from('#course-list-panel', { x: -20, opacity: 0, duration: 0.5 }, '-=0.2')
+      .from('#editor-panel', { x: 20, opacity: 0, duration: 0.5 }, '-=0.45');
+
+    // Input focus glow
+    document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(el => {
+      el.addEventListener('focus', () => {
+        gsap.to(el, { boxShadow: '0 0 0 3px rgba(200,168,75,0.12)', duration: 0.2 });
+      });
+      el.addEventListener('blur', () => {
+        gsap.to(el, { boxShadow: '0 0 0 0px rgba(200,168,75,0)', duration: 0.2 });
+      });
+    });
+
+    loadCourses();
+  });
+
   // ── State ──
   let allCourses = [];
   let selectedCourseId = null;
@@ -846,7 +1312,10 @@
     t.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">${type === 'error' ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' : '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'}
     </svg><span>${msg}</span>`;
     tc.appendChild(t);
-    setTimeout(() => t.remove(), 4000);
+    gsap.from(t, { y: 12, opacity: 0, duration: 0.25, ease: 'power2.out' });
+    setTimeout(() => {
+      gsap.to(t, { y: 8, opacity: 0, duration: 0.2, ease: 'power2.in', onComplete: () => t.remove() });
+    }, 4000);
   }
 
   // ── Logout ──
@@ -858,8 +1327,12 @@
 
   // ── Status badge ──
   function statusBadge(status) {
-    const map = { active: 'badge-green', draft: 'badge-gold', archived: 'badge-gray' };
-    return `<span class="badge ${map[status] || 'badge-gray'}">${status}</span>`;
+    const map = {
+      active: 'background:rgba(80,160,80,0.12);color:#88c888;border:1px solid rgba(80,160,80,0.2);',
+      draft: 'background:rgba(200,168,75,0.12);color:var(--gold);border:1px solid rgba(200,168,75,0.2);',
+      archived: 'background:rgba(240,230,211,0.06);color:var(--text-3);border:1px solid rgba(240,230,211,0.1);'
+    };
+    return `<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;${map[status] || map.archived}">${status}</span>`;
   }
 
   // ── Type icon ──
@@ -878,7 +1351,7 @@
       <div class="course-list-item ${c.id === selectedCourseId ? 'selected' : ''}" onclick="selectCourse(${c.id})" id="clist-${c.id}">
         <div class="course-swatch" style="background:${c.cover_color || '#2D4F1E'};"></div>
         <div class="course-list-info">
-          <div class="course-list-title">${c.title}</div>
+          <div class="course-list-title">${escHtml(c.title)}</div>
           <div class="course-list-meta">
             <span>${c.lesson_count || 0} lessons</span>
             <span>·</span>
@@ -887,6 +1360,10 @@
         </div>
       </div>
     `).join('');
+    // Animate items in
+    gsap.from(el.querySelectorAll('.course-list-item'), {
+      opacity: 0, x: -10, stagger: 0.05, duration: 0.4, ease: 'power2.out'
+    });
   }
 
   // ── Filter courses ──
@@ -933,7 +1410,7 @@
     document.querySelectorAll('.course-list-item').forEach(el => el.classList.remove('selected'));
     populateOverview({});
     showEditor('New Course');
-    document.getElementById('chapters-container').innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-light);"><p style="font-size:13px;">Save the course first to manage chapters.</p></div>`;
+    document.getElementById('chapters-container').innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-3);"><p style="font-size:13px;">Save the course first to manage chapters.</p></div>`;
     document.getElementById('assignments-list').innerHTML = '';
     document.getElementById('assign-count-label').textContent = 'Save the course first.';
     switchEditorTab('overview', document.querySelector('.editor-tab'));
@@ -959,16 +1436,20 @@
   // ── Show editor ──
   function showEditor(title) {
     document.getElementById('editor-placeholder').style.display = 'none';
-    document.getElementById('editor-inner').style.display = 'flex';
+    const inner = document.getElementById('editor-inner');
+    inner.style.display = 'flex';
     document.getElementById('editor-course-title').textContent = title;
+    gsap.from(inner, { opacity: 0, duration: 0.3, ease: 'power2.out' });
   }
 
-  // ── Switch editor tab ──
+  // ── Switch editor tab with GSAP ──
   function switchEditorTab(name, btn) {
     document.querySelectorAll('.editor-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.editor-tab-panel').forEach(p => p.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    document.getElementById('etab-' + name).classList.add('active');
+    const panel = document.getElementById('etab-' + name);
+    panel.classList.add('active');
+    gsap.from(panel, { opacity: 0, y: 10, duration: 0.3, ease: 'power2.out' });
   }
 
   // ── Swatch picker ──
@@ -1006,7 +1487,6 @@
         isNewCourse = false;
         await loadCourses();
         toast('Course created successfully!');
-        // Now enable chapters
         loadChapters(selectedCourseId);
         loadAssignments(selectedCourseId);
       } else {
@@ -1059,10 +1539,10 @@
   function renderChapters() {
     const container = document.getElementById('chapters-container');
     if (!chaptersData.length) {
-      container.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-light);font-size:13px;">No chapters yet. Add your first chapter below.</div>`;
+      container.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-3);font-size:13px;">No chapters yet. Add your first chapter below.</div>`;
       return;
     }
-    container.innerHTML = chaptersData.map((ch, ci) => `
+    container.innerHTML = chaptersData.map((ch) => `
       <div class="chapter-wrap" id="chap-${ch.id}">
         <div class="chapter-header">
           <span class="chapter-drag" title="Drag to reorder">
@@ -1093,6 +1573,10 @@
         </div>
       </div>
     `).join('');
+    // Animate chapters in
+    gsap.from(container.querySelectorAll('.chapter-wrap'), {
+      opacity: 0, y: 12, stagger: 0.07, duration: 0.4, ease: 'power2.out'
+    });
   }
 
   function renderLessonRow(l) {
@@ -1136,7 +1620,6 @@
       });
       chaptersData.push({ ...data, lessons: [] });
       renderChapters();
-      // Focus the new chapter title
       const inp = document.getElementById('ch-title-' + data.id);
       if (inp) { inp.select(); inp.focus(); }
     } catch (e) {
@@ -1183,7 +1666,6 @@
         ch.lessons.push(data);
       }
       renderChapters();
-      // Focus new lesson
       const inp = document.getElementById('les-title-' + data.id);
       if (inp) { inp.select(); inp.focus(); }
     } catch (e) {
@@ -1203,7 +1685,6 @@
         duration_minutes: parseInt(durInp?.value) || null,
         order_index: 0
       });
-      // Update icon
       const iconEl = titleInp.closest('.lesson-row')?.querySelector('.lesson-type-icon');
       if (iconEl) iconEl.textContent = typeIcon(typeInp?.value || 'video');
     } catch (e) {
@@ -1244,7 +1725,7 @@
     const label = document.getElementById('assign-count-label');
     label.textContent = assignmentsData.length + ' assignment' + (assignmentsData.length !== 1 ? 's' : '');
     if (!assignmentsData.length) {
-      list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-light);font-size:13px;">No assignments yet.</div>`;
+      list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-3);font-size:13px;">No assignments yet.</div>`;
       return;
     }
     const subIcons = { file: '📎', text: '✏️', recording: '🎙️' };
@@ -1274,6 +1755,10 @@
         </div>
       </div>
     `).join('');
+    // Animate assignment cards
+    gsap.from(list.querySelectorAll('.assignment-card'), {
+      opacity: 0, y: 12, stagger: 0.07, duration: 0.4, ease: 'power2.out'
+    });
   }
 
   function openAssignmentDrawer(id) {
@@ -1299,12 +1784,10 @@
         document.getElementById('assign-due-date').value = a.due_date || '';
         document.getElementById('assign-required').checked = !!a.is_required;
         document.getElementById('assign-visible').checked = a.visible !== 0;
-        // File types
         const fts = JSON.parse(a.allowed_file_types || '[]');
         document.querySelectorAll('.ft-check').forEach(cb => { cb.checked = fts.includes(cb.value); });
       }
     } else {
-      // Reset
       document.getElementById('assign-id').value = '';
       document.getElementById('assign-title').value = '';
       document.getElementById('assign-desc').value = '';
@@ -1394,9 +1877,6 @@
       }
     };
   }
-
-  // ── Init ──
-  loadCourses();
 </script>
 </body>
 </html>

@@ -5,55 +5,146 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resource Library — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
     .resource-layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
-    .filter-sidebar { background: var(--parchment); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); position: sticky; top: 24px; }
+
+    /* Filter sidebar — dark pills, gold active */
+    .filter-sidebar {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow);
+      position: sticky; top: 24px;
+    }
     .filter-group { margin-bottom: 20px; }
-    .filter-group-title { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+    .filter-group-title { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
     .filter-check { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; cursor: pointer; }
-    .filter-check input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--crimson); cursor: pointer; }
-    .filter-check-label { font-size: 13px; color: var(--text-mid); font-weight: 500; cursor: pointer; }
+    .filter-check input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--gold); cursor: pointer; }
+    .filter-check-label { font-size: 13px; color: var(--text-2); font-weight: 500; cursor: pointer; }
+    .filter-check:has(input:checked) .filter-check-label { color: var(--gold); }
+
+    /* Resource grid */
     .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-    .resource-card { background: var(--parchment); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.18s, transform 0.18s; }
-    .resource-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-    .resource-icon { width: 48px; height: 48px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
-    .resource-title { font-weight: 600; font-size: 14px; color: var(--text-dark); line-height: 1.3; }
-    .resource-meta { font-size: 11px; color: var(--text-light); }
-    .resource-list-item { background: var(--parchment); display: flex; align-items: center; gap: 14px; padding: 13px 18px; border-bottom: 1px solid var(--border); transition: background 0.14s; }
+    .resource-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.10);
+      border-radius: var(--radius-lg); padding: 20px;
+      box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
+      transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+    }
+    .resource-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: rgba(200,168,75,0.25); }
+
+    /* File type icon in gold circle */
+    .resource-icon {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+      background: rgba(200,168,75,0.12);
+      border: 1.5px solid rgba(200,168,75,0.25);
+      color: var(--gold);
+    }
+    .resource-title { font-weight: 600; font-size: 14px; color: var(--text); line-height: 1.3; }
+    .resource-meta { font-size: 11px; color: var(--text-3); }
+
+    /* Download count in gold */
+    .download-count { font-size: 12px; color: var(--gold); font-weight: 600; }
+
+    /* List view */
+    .resource-list-item {
+      background: var(--bg-card);
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 18px;
+      border-bottom: 1px solid rgba(200,168,75,0.06);
+      transition: background 0.14s;
+    }
     .resource-list-item:first-child { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
     .resource-list-item:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-bottom: none; }
-    .resource-list-item:hover { background: var(--parchment-light); }
+    .resource-list-item:hover { background: var(--bg-elevated); }
+
     .file-type-badge { display: inline-flex; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: white; }
-    .badge-pdf { background: #dc2626; }
-    .badge-mp3 { background: #7c3aed; }
-    .badge-mp4 { background: #1d4ed8; }
-    .badge-midi { background: #059669; }
-    .badge-wav { background: #d97706; }
-    .badge-docx { background: #2563eb; }
-    .badge-png, .badge-jpg { background: #0891b2; }
-    .badge-default { background: #6b7280; }
+    .badge-pdf { background: #8B2020; }
+    .badge-mp3 { background: #5B2D8B; }
+    .badge-mp4 { background: #1A3A7A; }
+    .badge-midi { background: #1A5A40; }
+    .badge-wav { background: #7A4A10; }
+    .badge-docx { background: #1A3A8B; }
+    .badge-png, .badge-jpg { background: #1A5A70; }
+    .badge-default { background: #4A4030; }
+
+    /* Toolbar */
     .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-    .view-toggle { display: flex; border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    .view-btn { padding: 6px 12px; background: none; border: none; cursor: pointer; color: var(--text-light); transition: all 0.14s; }
-    .view-btn.active { background: var(--crimson); color: white; }
-    .sort-select { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: var(--parchment); color: var(--text-mid); }
-    .upload-zone { border: 2px dashed var(--gold); border-radius: var(--radius-lg); padding: 32px; text-align: center; background: rgba(209,161,78,0.05); cursor: pointer; transition: background 0.15s, border-color 0.15s; }
-    .upload-zone:hover, .upload-zone.dragover { background: rgba(209,161,78,0.12); border-color: var(--gold-dark); }
+    .view-toggle {
+      display: flex;
+      border: 1.5px solid rgba(200,168,75,0.20);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .view-btn { padding: 6px 12px; background: none; border: none; cursor: pointer; color: var(--text-3); transition: all 0.14s; }
+    .view-btn.active { background: var(--gold); color: #0F0D0B; }
+    .sort-select {
+      padding: 6px 10px;
+      border: 1.5px solid rgba(200,168,75,0.20) !important;
+      border-radius: var(--radius);
+      font-size: 13px; font-family: var(--sans);
+      background: var(--bg-2) !important; color: var(--text-2) !important;
+    }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed rgba(200,168,75,0.30);
+      border-radius: var(--radius-lg); padding: 32px; text-align: center;
+      background: rgba(200,168,75,0.04); cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      background: rgba(200,168,75,0.10);
+      border-color: var(--gold);
+    }
     .upload-zone-icon { color: var(--gold); margin: 0 auto 12px; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(17,16,9,0.65); display: flex; align-items: center; justify-content: center; z-index: 300; animation: fadeIn 0.14s ease; }
-    .modal-box { background: var(--parchment); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 520px; box-shadow: var(--shadow-lg); animation: scaleIn 0.16s ease; }
-    .modal-title { font-family: 'Newsreader', serif; font-style: italic; font-size: 21px; font-weight: 600; color: var(--text-dark); margin-bottom: 20px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; animation: fadeIn 0.14s ease;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.18);
+      border-radius: var(--radius-lg); padding: 32px;
+      width: 100%; max-width: 520px;
+      box-shadow: var(--shadow-lg); animation: scaleIn 0.16s ease;
+    }
+    .modal-title { font-family: var(--serif); font-style: italic; font-size: 21px; font-weight: 600; color: var(--text); margin-bottom: 20px; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scaleIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
     .toggle-wrap { display: flex; align-items: center; gap: 10px; }
     .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track { position: absolute; inset: 0; border-radius: 99px; background: var(--parchment-dark); border: 1.5px solid var(--border); cursor: pointer; transition: background 0.18s; }
-    .toggle input:checked + .toggle-track { background: var(--forest); border-color: var(--forest); }
-    .toggle-track::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: white; top: 50%; left: 2px; transform: translateY(-50%); transition: left 0.18s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-track {
+      position: absolute; inset: 0; border-radius: 99px;
+      background: var(--bg-elevated); border: 1.5px solid rgba(200,168,75,0.15);
+      cursor: pointer; transition: background 0.18s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--gold); border-color: var(--gold); }
+    .toggle-track::after {
+      content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--text); top: 50%; left: 2px;
+      transform: translateY(-50%); transition: left 0.18s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
     .toggle input:checked + .toggle-track::after { left: 20px; }
+
+    /* Buttons */
+    .btn-primary { background: var(--gold); color: #0F0D0B; border: 1.5px solid var(--gold); font-weight: 700; }
+    .btn-primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+    .btn-outline { background: transparent; color: var(--gold); border: 1.5px solid rgba(200,168,75,0.35); font-weight: 600; }
+    .btn-outline:hover { background: rgba(200,168,75,0.08); border-color: var(--gold); }
+    .btn-ghost { background: transparent; color: var(--text-2); border: 1.5px solid rgba(200,168,75,0.15); }
+    .btn-ghost:hover { border-color: rgba(200,168,75,0.35); color: var(--text); }
+
+    /* Course chip */
+    .course-chip { font-size: 11px; font-weight: 600; color: var(--gold); background: rgba(200,168,75,0.08); padding: 2px 7px; border-radius: 99px; border: 1px solid rgba(200,168,75,0.18); display: inline-flex; width: fit-content; }
   </style>
 </head>
 <body>
@@ -128,7 +219,7 @@
     </header>
 
     <main class="main-content">
-      <div style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
+      <div class="page-header" style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
         <div>
           <h1 class="page-title">Resource Library</h1>
           <p class="page-subtitle">Backing tracks, PDFs, recordings, and supplementary materials.</p>
@@ -181,7 +272,7 @@
               <option value="downloads">Most Downloaded</option>
               <option value="name">Name A-Z</option>
             </select>
-            <span id="resource-count" style="font-size:12px; color:var(--text-light); margin-left:auto;"></span>
+            <span id="resource-count" style="font-size:12px; color:var(--text-3); margin-left:auto;"></span>
           </div>
 
           <div id="resources-container">
@@ -202,14 +293,14 @@
   <div class="modal-box" style="max-width:560px;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
       <div class="modal-title">Upload Resource</div>
-      <button style="background:none;border:none;cursor:pointer;color:var(--text-light);" onclick="closeUploadModal()">
+      <button style="background:none;border:none;cursor:pointer;color:var(--text-3);" onclick="closeUploadModal()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
       <svg class="upload-zone-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      <div style="font-weight:600; color:var(--text-mid); margin-bottom:4px;" id="upload-zone-label">Drop file here or click to browse</div>
-      <div style="font-size:12px; color:var(--text-light);">PDF, MP3, MP4, WAV, MIDI, DOCX, PNG up to 200MB</div>
+      <div style="font-weight:600; color:var(--text-2); margin-bottom:4px;" id="upload-zone-label">Drop file here or click to browse</div>
+      <div style="font-size:12px; color:var(--text-3);">PDF, MP3, MP4, WAV, MIDI, DOCX, PNG up to 200MB</div>
     </div>
     <input type="file" id="file-input" style="display:none;" onchange="handleFileSelect(event)">
     <div class="form-group" style="margin-top:16px;">
@@ -242,7 +333,7 @@
     </div>
     <div class="toggle-wrap" style="margin-bottom:16px;">
       <label class="toggle"><input type="checkbox" id="res-public"><div class="toggle-track"></div></label>
-      <span style="font-size:13px; font-weight:500; color:var(--text-mid);">Make publicly accessible</span>
+      <span style="font-size:13px; font-weight:500; color:var(--text-2);">Make publicly accessible</span>
     </div>
     <div style="display:flex; gap:10px;">
       <button class="btn btn-primary" style="flex:1;" id="upload-submit-btn" onclick="submitUpload()">
@@ -301,16 +392,6 @@
     return icons[type] || `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
   }
 
-  function fileBgColor(type) {
-    const map = { pdf: 'rgba(220,38,38,0.1)', mp3: 'rgba(124,58,237,0.1)', mp4: 'rgba(29,78,216,0.1)', midi: 'rgba(5,150,105,0.1)', wav: 'rgba(217,119,6,0.1)', docx: 'rgba(37,99,235,0.1)', png: 'rgba(8,145,178,0.1)', jpg: 'rgba(8,145,178,0.1)' };
-    return map[type] || 'rgba(107,114,128,0.1)';
-  }
-
-  function fileColor(type) {
-    const map = { pdf: '#dc2626', mp3: '#7c3aed', mp4: '#1d4ed8', midi: '#059669', wav: '#d97706', docx: '#2563eb', png: '#0891b2', jpg: '#0891b2' };
-    return map[type] || '#6b7280';
-  }
-
   document.addEventListener('userLoaded', (e) => {
     currentUser = e.detail;
     document.getElementById('sb-avatar').textContent = currentUser.avatar_initials || (currentUser.first_name[0] + currentUser.last_name[0]);
@@ -358,19 +439,20 @@
     document.getElementById('resource-count').textContent = resources.length + ' resource' + (resources.length !== 1 ? 's' : '');
 
     if (!resources || resources.length === 0) {
-      el.innerHTML = `<div style="text-align:center;padding:60px;color:var(--text-light);font-style:italic;">No resources found.</div>`;
+      el.innerHTML = `<div style="text-align:center;padding:60px;color:var(--text-3);font-style:italic;">No resources found.</div>`;
       return;
     }
 
     if (currentView === 'grid') {
       el.innerHTML = `<div class="resource-grid">${resources.map(r => `
-        <div class="resource-card">
-          <div class="resource-icon" style="background:${fileBgColor(r.file_type)};color:${fileColor(r.file_type)};">
+        <div class="resource-card card">
+          <div class="resource-icon">
             ${fileTypeIcon(r.file_type)}
           </div>
           <div class="resource-title">${r.title}</div>
-          ${r.course_title ? `<div style="font-size:11px;font-weight:600;color:var(--forest);background:rgba(45,79,30,0.08);padding:2px 7px;border-radius:99px;display:inline-flex;width:fit-content;">${r.course_title}</div>` : ''}
-          <div class="resource-meta">${formatBytes(r.file_size_bytes)} · ${r.download_count || 0} downloads</div>
+          ${r.course_title ? `<div class="course-chip">${r.course_title}</div>` : ''}
+          <div class="resource-meta">${formatBytes(r.file_size_bytes)}</div>
+          <div class="download-count">${r.download_count || 0} downloads</div>
           <div style="display:flex;gap:6px;margin-top:4px;">
             <span class="file-type-badge badge-${r.file_type || 'default'}">${(r.file_type || '—').toUpperCase()}</span>
           </div>
@@ -381,23 +463,23 @@
         </div>
       `).join('')}</div>`;
     } else {
-      el.innerHTML = `<div style="background:var(--parchment);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;">
+      el.innerHTML = `<div style="background:var(--bg-card);border:1px solid rgba(200,168,75,0.10);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;">
         ${resources.map(r => `
-          <div class="resource-list-item">
-            <div style="width:36px;height:36px;border-radius:var(--radius);background:${fileBgColor(r.file_type)};color:${fileColor(r.file_type)};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div class="resource-list-item list-item">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(200,168,75,0.10);border:1.5px solid rgba(200,168,75,0.22);color:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               ${fileTypeIcon(r.file_type)}
             </div>
             <div style="flex:1;min-width:0;">
-              <div style="font-weight:600;font-size:14px;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.title}</div>
-              <div style="font-size:11px;color:var(--text-light);">${r.course_title || 'No course'} · ${r.category || 'general'}</div>
+              <div style="font-weight:600;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.title}</div>
+              <div style="font-size:11px;color:var(--text-3);">${r.course_title || 'No course'} · ${r.category || 'general'}</div>
             </div>
             <span class="file-type-badge badge-${r.file_type || 'default'}" style="flex-shrink:0;">${(r.file_type || '—').toUpperCase()}</span>
-            <div style="font-size:12px;color:var(--text-light);flex-shrink:0;min-width:60px;text-align:right;">${formatBytes(r.file_size_bytes)}</div>
-            <div style="font-size:12px;color:var(--text-light);flex-shrink:0;min-width:60px;text-align:right;">${r.download_count || 0} dl</div>
-            <div style="font-size:12px;color:var(--text-light);flex-shrink:0;min-width:80px;text-align:right;">${formatDate(r.created_at)}</div>
+            <div style="font-size:12px;color:var(--text-3);flex-shrink:0;min-width:60px;text-align:right;">${formatBytes(r.file_size_bytes)}</div>
+            <div class="download-count" style="flex-shrink:0;min-width:60px;text-align:right;">${r.download_count || 0} dl</div>
+            <div style="font-size:12px;color:var(--text-3);flex-shrink:0;min-width:80px;text-align:right;">${formatDate(r.created_at)}</div>
             <button class="btn btn-outline" style="font-size:12px;flex-shrink:0;" onclick="downloadResource(${r.id})">Download</button>
             ${currentUser && ['instructor','admin'].includes(currentUser.role) && r.uploaded_by === currentUser.id ? `
-              <button class="btn btn-ghost" style="font-size:11px;flex-shrink:0;color:var(--crimson);" onclick="deleteResource(${r.id})">Delete</button>
+              <button class="btn btn-ghost" style="font-size:11px;flex-shrink:0;color:#e07070;" onclick="deleteResource(${r.id})">Delete</button>
             ` : ''}
           </div>
         `).join('')}
@@ -510,6 +592,19 @@
       btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload`;
     }
   }
+</script>
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('.page-header, .stat-card, .card, .list-item, .section-block', {
+  y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+});
+gsap.utils.toArray('.card, .list-item, tr').forEach(el => {
+  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+    y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+});
 </script>
 </body>
 </html>
