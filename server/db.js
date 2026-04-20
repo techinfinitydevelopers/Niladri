@@ -160,6 +160,33 @@ db.exec(`
     text TEXT NOT NULL,
     attribution TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS app_config (
+    id INTEGER PRIMARY KEY,
+    s3_config TEXT DEFAULT '{}',
+    smtp_config TEXT DEFAULT '{}',
+    general_config TEXT DEFAULT '{}',
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS assignments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    instructions TEXT,
+    submission_type TEXT DEFAULT 'file',
+    allowed_file_types TEXT DEFAULT '[]',
+    max_file_size_mb INTEGER DEFAULT 10,
+    max_score INTEGER DEFAULT 100,
+    due_type TEXT DEFAULT 'relative',
+    due_days INTEGER,
+    due_date TEXT,
+    is_required INTEGER DEFAULT 1,
+    visible INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 // Seed data only if tables are empty

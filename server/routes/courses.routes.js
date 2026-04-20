@@ -15,8 +15,8 @@ router.get('/', (req, res) => {
     `;
     const params = [];
 
-    if (status) { query += ' AND c.status = ?'; params.push(status); }
-    else { query += " AND c.status = 'active'"; }
+    if (status && status !== 'all') { query += ' AND c.status = ?'; params.push(status); }
+    else if (!status) { query += " AND c.status = 'active'"; }
     if (level) { query += ' AND c.level = ?'; params.push(level); }
     if (category) { query += ' AND c.category = ?'; params.push(category); }
     if (instrument) { query += ' AND c.instrument = ?'; params.push(instrument); }
