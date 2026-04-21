@@ -3,42 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile — The Archive</title>
+  <title>Profile — The Foundation Room</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
     .profile-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
-    .profile-card { background: var(--parchment); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); }
-    .avatar-upload { width: 96px; height: 96px; border-radius: 50%; background: var(--crimson); display: flex; align-items: center; justify-content: center; font-family: 'Newsreader', serif; font-size: 32px; color: var(--parchment); margin: 0 auto 16px; cursor: pointer; position: relative; overflow: hidden; }
+
+    /* ── Profile sidebar card ── */
+    .profile-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: border-color .2s;
+    }
+    .profile-card:hover { border-color: rgba(200,168,75,0.25); }
+
+    /* ── Avatar ── */
+    .avatar-upload {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a0d00, #2d1f00);
+      border: 2px solid rgba(200,168,75,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 32px; font-weight: 600;
+      color: var(--gold);
+      margin: 0 auto 16px; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .avatar-upload:hover { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(200,168,75,0.1); }
     .avatar-upload img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-    .avatar-upload-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity var(--transition); border-radius: 50%; }
+    .avatar-upload-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s; border-radius: 50%;
+    }
     .avatar-upload:hover .avatar-upload-overlay { opacity: 1; }
-    .profile-name { font-family: 'Newsreader', serif; font-style: italic; font-size: 22px; font-weight: 600; color: var(--text-dark); text-align: center; margin-bottom: 4px; }
+
+    /* ── Name & meta ── */
+    .profile-name {
+      font-family: var(--serif); font-style: italic;
+      font-size: 22px; font-weight: 600;
+      color: var(--text); text-align: center; margin-bottom: 4px;
+    }
+    .member-since { font-size: 12px; color: var(--text-3); text-align: center; margin-top: 4px; }
     .profile-role-badge { display: flex; justify-content: center; margin-bottom: 16px; }
-    .profile-stat-row { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+
+    /* ── Stats row ── */
+    .profile-stat-row {
+      display: flex; flex-direction: column; gap: 10px;
+      margin-top: 20px; border-top: 1px solid rgba(200,168,75,0.1); padding-top: 20px;
+    }
     .profile-stat { display: flex; justify-content: space-between; align-items: center; }
-    .profile-stat-label { font-size: 12px; color: var(--text-light); }
-    .profile-stat-val { font-weight: 700; font-size: 14px; color: var(--text-dark); }
-    .prof-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--parchment-dark); border-radius: var(--radius); padding: 4px; width: fit-content; }
-    .prof-tab { padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; color: var(--text-light); cursor: pointer; transition: all var(--transition); }
-    .prof-tab.active { background: var(--parchment); color: var(--crimson); box-shadow: var(--shadow); }
-    .prof-tab:hover:not(.active) { color: var(--text-dark); }
+    .profile-stat-label { font-size: 12px; color: var(--text-3); }
+    .profile-stat-val {
+      font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--gold);
+    }
+
+    /* ── Tab bar ── */
+    .prof-tabs {
+      display: flex; gap: 4px; margin-bottom: 24px;
+      background: var(--bg-2); border-radius: var(--radius); padding: 4px;
+      width: fit-content; border: 1px solid rgba(200,168,75,0.08);
+    }
+    .prof-tab {
+      padding: 8px 20px; border-radius: 6px;
+      font-size: 13px; font-weight: 500; color: var(--text-3);
+      cursor: pointer; transition: all .18s;
+    }
+    .prof-tab.active {
+      background: var(--bg-elevated); color: var(--gold);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    .prof-tab:hover:not(.active) { color: var(--text-2); background: rgba(200,168,75,0.04); }
     .prof-tab-panel { display: none; }
     .prof-tab-panel.active { display: block; }
-    .strength-bar { height: 4px; border-radius: 99px; background: var(--parchment-dark); margin-top: 6px; overflow: hidden; }
-    .strength-fill { height: 100%; border-radius: 99px; transition: width 0.3s ease, background 0.3s ease; }
-    .toggle-wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+
+    /* ── Password strength ── */
+    .strength-bar {
+      height: 4px; border-radius: 99px;
+      background: var(--bg-elevated); margin-top: 6px; overflow: hidden;
+    }
+    .strength-fill { height: 100%; border-radius: 99px; transition: width .3s, background .3s; }
+
+    /* ── Toggle switches ── */
+    .toggle-wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-bottom: 1px solid rgba(200,168,75,0.08);
+    }
     .toggle-wrap:last-child { border-bottom: none; }
-    .toggle-label { font-size: 14px; color: var(--text-dark); }
-    .toggle-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .toggle-label { font-size: 14px; color: var(--text); }
+    .toggle-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
     .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider { position: absolute; inset: 0; background: var(--parchment-dark); border-radius: 99px; transition: background var(--transition); cursor: pointer; }
-    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: transform var(--transition); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-    .toggle input:checked + .toggle-slider { background: var(--crimson); }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
-    .member-since { font-size: 12px; color: var(--text-light); text-align: center; margin-top: 4px; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: var(--bg-elevated); border: 1px solid rgba(200,168,75,0.15);
+      border-radius: 99px; transition: background .2s; cursor: pointer;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--text-3); top: 2px; left: 2px;
+      transition: transform .2s, background .2s;
+    }
+    .toggle input:checked + .toggle-slider { background: rgba(200,168,75,0.2); border-color: var(--gold); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--gold); }
+
+    /* ── Practice slider ── */
+    input[type=range] { accent-color: var(--gold); }
+    #practice-display { color: var(--gold); font-weight: 600; }
   </style>
 </head>
 <body>
@@ -491,6 +567,46 @@
       toast(err.message, 'error');
     }
   }
+</script>
+
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// Page entrance
+const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+tl.from('.page-header', { y: -20, opacity: 0, duration: 0.5 })
+  .from('.profile-card', { x: -28, opacity: 0, duration: 0.6 }, '-=0.25')
+  .from('.prof-tabs', { y: 16, opacity: 0, duration: 0.5 }, '-=0.4')
+  .from('.tab-panel.active > *', { y: 20, opacity: 0, duration: 0.45, stagger: 0.07 }, '-=0.3');
+
+// Avatar pulse glow on load
+gsap.to('.avatar-upload', {
+  boxShadow: '0 0 24px rgba(200,168,75,0.25)',
+  duration: 1.2,
+  repeat: 1,
+  yoyo: true,
+  ease: 'sine.inOut',
+  delay: 0.8
+});
+
+// Form groups scroll reveal
+gsap.utils.toArray('.form-group').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 92%' },
+    y: 14, opacity: 0, duration: 0.4, ease: 'power2.out'
+  });
+});
+
+// Toggle rows scroll reveal
+gsap.utils.toArray('.toggle-wrap').forEach((el, i) => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 92%' },
+    x: -12, opacity: 0, duration: 0.35, delay: i * 0.04, ease: 'power2.out'
+  });
+});
 </script>
 </body>
 </html>

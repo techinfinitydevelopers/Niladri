@@ -5,49 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
     .search-hero { margin-bottom: 28px; }
+
+    /* Prominent dark search input with gold focus ring + magnifier */
     .search-hero-input-wrap { position: relative; margin-bottom: 16px; }
     .search-hero-input {
       width: 100%;
       padding: 16px 20px 16px 52px;
       font-size: 18px;
-      font-family: 'Work Sans', sans-serif;
-      background: var(--parchment);
-      border: 2px solid var(--border);
+      font-family: var(--sans);
+      background: var(--bg-card) !important;
+      border: 2px solid rgba(200,168,75,0.20) !important;
       border-radius: var(--radius-lg);
-      color: var(--text-dark);
+      color: var(--text) !important;
       box-shadow: var(--shadow);
       transition: border-color 0.18s ease, box-shadow 0.18s ease;
       outline: none;
     }
-    .search-hero-input:focus { border-color: var(--crimson); box-shadow: 0 0 0 3px rgba(139,46,38,0.12); }
-    .search-hero-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-light); pointer-events: none; }
+    .search-hero-input:focus {
+      border-color: var(--gold) !important;
+      box-shadow: 0 0 0 4px rgba(200,168,75,0.14) !important;
+    }
+    .search-hero-input::placeholder { color: var(--text-3) !important; }
+    .search-hero-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--gold); pointer-events: none; }
+
+    /* Filter chips — dark, gold active */
     .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-chip { padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border); background: var(--parchment); color: var(--text-mid); cursor: pointer; transition: all 0.15s ease; }
-    .filter-chip:hover { border-color: var(--crimson); color: var(--crimson); }
-    .filter-chip.active { background: var(--crimson); border-color: var(--crimson); color: var(--parchment); }
+    .filter-chip {
+      padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+      border: 1.5px solid rgba(200,168,75,0.18);
+      background: var(--bg-card); color: var(--text-2);
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .filter-chip:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-chip.active { background: var(--gold); border-color: var(--gold); color: #0F0D0B; }
+
+    /* Results */
     .results-section { margin-bottom: 28px; }
-    .results-section-title { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-    .results-section-count { background: var(--parchment-dark); color: var(--text-mid); border-radius: 99px; padding: 1px 8px; font-size: 10px; font-weight: 700; }
-    .result-card { background: var(--parchment); border-radius: var(--radius); padding: 14px 18px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; margin-bottom: 8px; cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; text-decoration: none; color: inherit; }
-    .result-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
-    .result-icon { width: 40px; height: 40px; border-radius: var(--radius); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .result-title { font-weight: 600; font-size: 14px; color: var(--text-dark); margin-bottom: 2px; }
-    .result-sub { font-size: 12px; color: var(--text-light); }
+    .results-section-title {
+      font-size: 11px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .results-section-count {
+      background: var(--bg-elevated); color: var(--text-2);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: 99px; padding: 1px 8px;
+      font-size: 10px; font-weight: 700;
+    }
+
+    /* Result cards — dark, gold title highlight */
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.10);
+      border-radius: var(--radius);
+      padding: 14px 18px; box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 8px; cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+      text-decoration: none; color: inherit;
+    }
+    .result-card:hover {
+      box-shadow: var(--shadow-lg); transform: translateY(-1px);
+      border-color: rgba(200,168,75,0.25);
+    }
+    .result-icon {
+      width: 40px; height: 40px; border-radius: var(--radius);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    }
+    /* Gold title for result cards */
+    .result-title { font-weight: 600; font-size: 14px; color: var(--gold); margin-bottom: 2px; }
+    .result-sub { font-size: 12px; color: var(--text-3); }
+
+    /* Type badges */
     .type-badge { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-    .type-course { background: rgba(45,79,30,0.1); color: var(--forest); }
-    .type-sheet { background: rgba(139,46,38,0.1); color: var(--crimson); }
-    .type-master { background: rgba(209,161,78,0.15); color: #8B6914; }
-    .type-resource { background: rgba(0,0,0,0.07); color: var(--text-mid); }
-    .type-user { background: rgba(45,79,30,0.1); color: var(--forest); }
-    .avatar-initials { width: 40px; height: 40px; border-radius: 50%; background: var(--forest); color: var(--parchment); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .type-course { background: rgba(200,168,75,0.10); color: var(--gold); border: 1px solid rgba(200,168,75,0.20); }
+    .type-sheet { background: rgba(200,168,75,0.06); color: var(--gold-bright); border: 1px solid rgba(200,168,75,0.15); }
+    .type-master { background: rgba(200,168,75,0.12); color: var(--gold); border: 1px solid rgba(200,168,75,0.22); }
+    .type-resource { background: rgba(200,168,75,0.05); color: var(--text-2); border: 1px solid rgba(200,168,75,0.12); }
+    .type-user { background: rgba(200,168,75,0.08); color: var(--gold); border: 1px solid rgba(200,168,75,0.18); }
+
+    .avatar-initials {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bg-elevated); border: 1.5px solid rgba(200,168,75,0.22);
+      color: var(--gold); font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
     .color-swatch { width: 40px; height: 40px; border-radius: var(--radius); flex-shrink: 0; }
-    .empty-state { text-align: center; padding: 60px 40px; color: var(--text-light); }
-    .empty-icon { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.4; }
-    .no-results { font-style: italic; font-size: 16px; color: var(--text-mid); }
+
+    .empty-state { text-align: center; padding: 60px 40px; color: var(--text-3); }
+    .empty-icon { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3; }
+    .no-results { font-style: italic; font-size: 16px; color: var(--text-2); }
     .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
   </style>
 </head>
@@ -120,7 +171,7 @@
     </header>
 
     <main class="main-content">
-      <div class="search-hero">
+      <div class="search-hero page-header">
         <div class="search-hero-input-wrap">
           <svg class="search-hero-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" class="search-hero-input" id="search-input" placeholder="Search courses, sheet music, students…" autocomplete="off" autofocus>
@@ -153,7 +204,7 @@
           <div class="empty-state">
             <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <div class="no-results">No results for "<span id="empty-query"></span>"</div>
-            <p style="margin-top:8px;font-size:13px;">Try a different search term or browse the library.</p>
+            <p style="margin-top:8px;font-size:13px;color:var(--text-3);">Try a different search term or browse the library.</p>
           </div>
         </div>
       </div>
@@ -198,7 +249,6 @@
 
     loadFeaturedCourses();
 
-    // Pre-fill from URL
     const q = new URLSearchParams(window.location.search).get('q');
     if (q) {
       document.getElementById('search-input').value = q;
@@ -232,7 +282,6 @@
   }
 
   async function runSearch(query) {
-    // Update URL
     const url = new URL(window.location);
     url.searchParams.set('q', query);
     window.history.replaceState({}, '', url);
@@ -271,7 +320,6 @@
     const el = document.getElementById('results-state');
     el.style.display = '';
 
-    // Group by type
     const groups = {};
     results.forEach(r => {
       if (!groups[r.type]) groups[r.type] = [];
@@ -301,7 +349,7 @@
   function renderResultCard(r, icon) {
     if (r.type === 'course') {
       return `<a href="/course-detail.html?id=${r.id}" class="result-card">
-        <div class="color-swatch" style="background:${r.cover_color || '#8B2E26'};"></div>
+        <div class="color-swatch" style="background:${r.cover_color || '#2D3A1E'};border-radius:var(--r-md);"></div>
         <div style="flex:1;">
           <div class="result-title">${r.title}</div>
           <div class="result-sub">${r.instructor_name || ''}</div>
@@ -311,7 +359,7 @@
     }
     if (r.type === 'sheet_music') {
       return `<a href="/sheet-music.html" class="result-card">
-        <div class="result-icon" style="background:rgba(139,46,38,0.08);color:var(--crimson);">${icon}</div>
+        <div class="result-icon" style="background:rgba(200,168,75,0.08);color:var(--gold);">${icon}</div>
         <div style="flex:1;">
           <div class="result-title">${r.title}</div>
           <div class="result-sub">${r.composer || ''}${r.period ? ' · ' + r.period : ''}</div>
@@ -322,7 +370,7 @@
     if (r.type === 'masterclass') {
       const d = r.scheduled_at ? new Date(r.scheduled_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
       return `<a href="/archive-browse.html" class="result-card">
-        <div class="result-icon" style="background:rgba(209,161,78,0.12);color:#8B6914;">${icon}</div>
+        <div class="result-icon" style="background:rgba(200,168,75,0.10);color:var(--gold-bright);">${icon}</div>
         <div style="flex:1;">
           <div class="result-title">${r.title}</div>
           <div class="result-sub">${r.instructor_name || ''}${d ? ' · ' + d : ''}</div>
@@ -332,7 +380,7 @@
     }
     if (r.type === 'resource') {
       return `<a href="/resource-library.html" class="result-card">
-        <div class="result-icon" style="background:rgba(0,0,0,0.06);color:var(--text-mid);">${icon}</div>
+        <div class="result-icon" style="background:var(--bg-elevated);color:var(--text-2);">${icon}</div>
         <div style="flex:1;">
           <div class="result-title">${r.title}</div>
           <div class="result-sub">${r.course_title || ''}${r.file_type ? ' · ' + r.file_type.toUpperCase() : ''}</div>
@@ -360,18 +408,18 @@
       const grid = document.getElementById('featured-courses-grid');
       const courses = (data.courses || []).slice(0, 6);
       if (courses.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-light);font-style:italic;">No courses yet.</p>';
+        grid.innerHTML = '<p style="color:var(--text-3);font-style:italic;">No courses yet.</p>';
         return;
       }
       grid.innerHTML = courses.map(c => `
         <a href="/course-detail.html?id=${c.id}" style="text-decoration:none;">
-          <div class="card" style="padding:16px;cursor:pointer;" onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='var(--shadow)'">
+          <div class="card" style="padding:16px;cursor:pointer;background:var(--bg-card);border:1px solid rgba(200,168,75,0.10);" onmouseover="this.style.borderColor='rgba(200,168,75,0.28)'" onmouseout="this.style.borderColor='rgba(200,168,75,0.10)'">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-              <div style="width:12px;height:12px;border-radius:50%;background:${c.cover_color || '#8B2E26'};flex-shrink:0;"></div>
-              <span style="font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.06em;">${c.level || 'Course'}</span>
+              <div style="width:12px;height:12px;border-radius:50%;background:${c.cover_color || '#2D3A1E'};flex-shrink:0;"></div>
+              <span style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;">${c.level || 'Course'}</span>
             </div>
-            <div style="font-family:'Newsreader',serif;font-style:italic;font-size:16px;font-weight:600;color:var(--text-dark);line-height:1.3;">${c.title}</div>
-            <div style="font-size:12px;color:var(--text-light);margin-top:4px;">${c.instructor_name || ''}</div>
+            <div style="font-family:var(--serif);font-style:italic;font-size:16px;font-weight:600;color:var(--gold);line-height:1.3;">${c.title}</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px;">${c.instructor_name || ''}</div>
           </div>
         </a>
       `).join('');
@@ -379,6 +427,19 @@
       document.getElementById('featured-courses-grid').innerHTML = '';
     }
   }
+</script>
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('.page-header, .stat-card, .card, .list-item, .section-block', {
+  y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+});
+gsap.utils.toArray('.card, .list-item, tr').forEach(el => {
+  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+    y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+});
 </script>
 </body>
 </html>

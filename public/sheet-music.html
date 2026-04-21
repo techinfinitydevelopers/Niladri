@@ -5,19 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sheet Music — The Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/archive.css">
   <style>
+    /* Sheet music grid */
     .sheet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
-    .sheet-card { background: var(--parchment); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
-    .sheet-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-    .sheet-preview { height: 160px; background: var(--parchment-dark); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-    .sheet-preview-icon { font-size: 48px; opacity: 0.25; }
-    .sheet-page-badge { position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.55); color:#fff; font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; }
-    .sheet-body { padding: 14px 16px 16px; }
 
-    .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 40px 20px; text-align:center; cursor:pointer; transition: border-color 0.18s, background 0.18s; }
-    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--crimson); background: rgba(139,46,38,0.04); }
+    .sheet-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.10);
+      border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .sheet-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: rgba(200,168,75,0.25); }
+
+    /* Dark PDF preview area */
+    .sheet-preview {
+      height: 160px; background: var(--bg-2);
+      display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    .sheet-preview-icon { font-size: 48px; opacity: 0.15; }
+    .sheet-page-badge {
+      position:absolute; top:10px; right:10px;
+      background:rgba(200,168,75,0.15); color:var(--gold);
+      border: 1px solid rgba(200,168,75,0.25);
+      font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px;
+    }
+    .sheet-body { padding: 14px 16px 16px; background: var(--bg-card); }
+
+    /* Gold composer name in Cormorant serif */
+    .sheet-composer {
+      font-family: var(--serif); font-style: italic;
+      font-size: 13px; font-weight: 600;
+      color: var(--gold); margin-bottom: 10px;
+    }
+
+    /* Sheet title */
+    .sheet-title {
+      font-family: var(--serif); font-style: italic;
+      font-size: 15px; font-weight: 600;
+      color: var(--text); margin-bottom: 3px; line-height: 1.3;
+    }
+
+    /* Difficulty badges */
+    .diff-badge { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; }
+    .diff-advanced { background: rgba(200,168,75,0.15); color: var(--gold-bright); border: 1px solid rgba(200,168,75,0.28); }
+    .diff-intermediate { background: rgba(200,168,75,0.08); color: var(--text-2); border: 1px solid rgba(200,168,75,0.18); }
+    .diff-beginner { background: rgba(45,90,39,0.15); color: #6fcf6f; border: 1px solid rgba(45,90,39,0.25); }
+
+    /* Period badge */
+    .period-badge { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; background: rgba(200,168,75,0.10); color: var(--gold); border: 1px solid rgba(200,168,75,0.20); }
+
+    /* Instrument badge */
+    .instrument-badge { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; background: var(--bg-elevated); color: var(--text-2); border: 1px solid rgba(200,168,75,0.10); }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed rgba(200,168,75,0.25);
+      border-radius: var(--radius-lg); padding: 40px 20px; text-align:center;
+      cursor:pointer; transition: border-color 0.18s, background 0.18s;
+      background: rgba(200,168,75,0.03);
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--gold);
+      background: rgba(200,168,75,0.08);
+    }
+
+    /* Upload panel */
+    .upload-panel-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(200,168,75,0.15);
+      border-radius: var(--radius-lg); padding: 22px; margin-bottom: 24px;
+    }
+
+    /* Topbar search */
+    .topbar-search {
+      position: relative; display: flex; align-items: center;
+    }
+    .topbar-search svg { position: absolute; left: 10px; color: var(--text-3); pointer-events: none; }
+    .topbar-search input {
+      background: var(--bg-2) !important;
+      border: 1.5px solid rgba(200,168,75,0.15) !important;
+      color: var(--text) !important;
+      padding: 7px 14px 7px 34px;
+      border-radius: var(--r-md);
+      font-family: var(--sans); font-size: 13px;
+      width: 220px; outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .topbar-search input:focus {
+      border-color: var(--gold) !important;
+      box-shadow: 0 0 0 3px rgba(200,168,75,0.12) !important;
+    }
+
+    /* Buttons */
+    .btn-primary { background: var(--gold); color: #0F0D0B; border: 1.5px solid var(--gold); font-weight: 700; }
+    .btn-primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+    .btn-ghost { background: transparent; color: var(--text-2); border: 1.5px solid rgba(200,168,75,0.15); }
+    .btn-ghost:hover { border-color: rgba(200,168,75,0.35); color: var(--text); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    .empty-state { color: var(--text-2); grid-column: 1/-1; text-align: center; padding: 60px 20px; }
+    .empty-state h3 { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--text); margin-bottom: 6px; }
+    .empty-state p { font-size: 13px; color: var(--text-3); }
   </style>
 </head>
 <body>
@@ -78,8 +169,10 @@
     </header>
 
     <main class="main-content">
-      <div class="page-title">Sheet Music</div>
-      <p class="page-subtitle">Scores, parts, and study materials from The Archive collection.</p>
+      <div class="page-header" style="margin-bottom:20px;">
+        <div class="page-title">Sheet Music</div>
+        <p class="page-subtitle">Scores, parts, and study materials from The Archive collection.</p>
+      </div>
 
       <!-- Filters -->
       <div class="filter-bar" style="margin-bottom:20px;">
@@ -108,8 +201,8 @@
       </div>
 
       <!-- Upload Panel (instructor only) -->
-      <div id="upload-panel" style="display:none;" class="card mb-24">
-        <div class="card-label" style="margin-bottom:16px;">Upload Sheet Music</div>
+      <div id="upload-panel" style="display:none;" class="upload-panel-card mb-24">
+        <div style="font-family:var(--serif);font-style:italic;font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;">Upload Sheet Music</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div class="form-group" style="margin:0;">
             <label class="form-label">Title</label>
@@ -135,12 +228,12 @@
           </div>
         </div>
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
-          <div style="font-size:32px; margin-bottom:8px; opacity:0.4;">📄</div>
-          <div style="font-size:14px; font-weight:600; color:var(--text-mid);">Click or drag PDF here</div>
-          <div style="font-size:12px; color:var(--text-light); margin-top:4px;">PDF files up to 50MB</div>
+          <div style="font-size:32px; margin-bottom:8px; opacity:0.35;">📄</div>
+          <div style="font-size:14px; font-weight:600; color:var(--text-2);">Click or drag PDF here</div>
+          <div style="font-size:12px; color:var(--text-3); margin-top:4px;">PDF files up to 50MB</div>
           <input type="file" id="file-input" accept=".pdf" style="display:none;" onchange="handleFileSelect(this)">
         </div>
-        <div id="selected-file" style="font-size:13px; color:var(--forest); margin-top:8px; display:none;"></div>
+        <div id="selected-file" style="font-size:13px; color:var(--gold); margin-top:8px; display:none;"></div>
         <div style="display:flex; gap:10px; margin-top:14px;">
           <button class="btn btn-primary" onclick="uploadSheetMusic()">Upload to Archive</button>
           <button class="btn btn-ghost" onclick="document.getElementById('upload-panel').style.display='none'">Cancel</button>
@@ -211,40 +304,52 @@
       const data = await api.get('/api/sheet-music?' + params.toString());
       renderSheetMusic(data.items || []);
     } catch (e) {
-      grid.innerHTML = `<div class="empty-state" style="color:var(--parchment); grid-column:1/-1;"><p>${e.message}</p></div>`;
+      grid.innerHTML = `<div class="empty-state"><p>${e.message}</p></div>`;
     }
   }
 
-  const periodColors = { Baroque: '#4A3728', Classical: '#2D4F1E', Romantic: '#8B2E26', Modern: '#1A3050' };
+  /* Period → cover colors: dark rich tones */
+  const periodColors = {
+    Baroque: '#1A0F06',
+    Classical: '#06140A',
+    Romantic: '#160608',
+    Modern: '#060A14'
+  };
+
+  function diffClass(d) {
+    if (d === 'Advanced') return 'diff-advanced';
+    if (d === 'Beginner') return 'diff-beginner';
+    return 'diff-intermediate';
+  }
 
   function renderSheetMusic(items) {
     const grid = document.getElementById('sheet-grid');
     if (!items.length) {
-      grid.innerHTML = '<div class="empty-state" style="color:var(--parchment); grid-column:1/-1;"><div class="empty-icon">🎼</div><h3>No scores found</h3><p>Adjust your filters or check back later.</p></div>';
+      grid.innerHTML = '<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🎼</div><h3>No scores found</h3><p>Adjust your filters or check back later.</p></div>';
       return;
     }
     grid.innerHTML = items.map(s => `
-      <div class="sheet-card">
-        <div class="sheet-preview" style="background:${periodColors[s.period] || '#2D4F1E'};">
-          <div style="text-align:center; color:rgba(255,255,255,0.8);">
+      <div class="sheet-card card">
+        <div class="sheet-preview" style="background:${periodColors[s.period] || '#0F0D0B'};">
+          <div style="text-align:center; color:rgba(200,168,75,0.30);">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
           </div>
           ${s.page_count ? `<div class="sheet-page-badge">${s.page_count} pages</div>` : ''}
         </div>
         <div class="sheet-body">
-          <div style="font-family:'Newsreader',serif; font-style:italic; font-size:15px; font-weight:600; color:var(--text-dark); margin-bottom:3px; line-height:1.3;">${s.title}</div>
-          <div style="font-size:12px; color:var(--text-light); margin-bottom:10px;">${s.composer || 'Unknown composer'}</div>
+          <div class="sheet-title">${s.title}</div>
+          <div class="sheet-composer">${s.composer || 'Unknown composer'}</div>
           <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-            ${s.period ? `<span class="badge badge-gold">${s.period}</span>` : ''}
-            ${s.difficulty ? `<span class="badge ${s.difficulty === 'Advanced' ? 'badge-crimson' : s.difficulty === 'Beginner' ? 'badge-green' : 'badge-gold'}">${s.difficulty}</span>` : ''}
-            ${s.instrument ? `<span class="badge badge-gray">${s.instrument}</span>` : ''}
+            ${s.period ? `<span class="period-badge">${s.period}</span>` : ''}
+            ${s.difficulty ? `<span class="diff-badge ${diffClass(s.difficulty)}">${s.difficulty}</span>` : ''}
+            ${s.instrument ? `<span class="instrument-badge">${s.instrument}</span>` : ''}
           </div>
           <div style="display:flex; gap:8px;">
             ${s.file_path ? `<a href="${s.file_path}" target="_blank" class="btn btn-primary btn-sm" style="flex:1; justify-content:center;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download
             </a>` : '<button class="btn btn-ghost btn-sm" disabled style="flex:1;">No file</button>'}
-            ${isInstructor ? `<button class="btn btn-ghost btn-sm" style="color:var(--crimson);" onclick="deleteSheet(${s.id})">Delete</button>` : ''}
+            ${isInstructor ? `<button class="btn btn-ghost btn-sm" style="color:#e07070;" onclick="deleteSheet(${s.id})">Delete</button>` : ''}
           </div>
         </div>
       </div>
@@ -309,6 +414,19 @@
       document.getElementById('selected-file').textContent = `Selected: ${selectedFile.name}`;
     }
   });
+</script>
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('.page-header, .stat-card, .card, .list-item, .section-block', {
+  y: 24, opacity: 0, duration: 0.65, stagger: 0.07, ease: 'power3.out', delay: 0.1
+});
+gsap.utils.toArray('.card, .list-item, tr').forEach(el => {
+  gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' },
+    y: 14, opacity: 0, duration: 0.45, ease: 'power2.out' });
+});
 </script>
 </body>
 </html>
