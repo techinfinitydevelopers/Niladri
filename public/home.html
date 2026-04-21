@@ -1711,7 +1711,16 @@
     // ─── HERO ANIMATION TIMELINE ───
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // Always ensure .reveal elements are visible — GSAP handles the animation,
+    // but if GSAP is slow or reduced-motion, nothing stays stuck at opacity:0.
+    // GSAP fromTo() below explicitly overrides these to opacity:1.
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+
     if (!prefersReducedMotion) {
+      // Immediately hide elements GSAP will animate in, via GSAP's own state
+      gsap.set(['.hero-eyebrow', '.hero-h1', '.hero-sub', '.hero-ctas', '.hero-proof'], { opacity: 0, y: 20 });
+      gsap.set('.nav-logo', { opacity: 0, y: -10 });
+
       // Split hero title into word spans
       const heroH1 = document.querySelector('.hero-h1');
       if (heroH1) {
@@ -1719,63 +1728,68 @@
           const words = line.textContent.split(' ');
           line.innerHTML = words.map(w => `<span class="hero-word" style="display:inline-block;">${w}</span>`).join(' ');
         });
+        gsap.set('.hero-word', { opacity: 0, y: 30 });
+        gsap.set('.hero-h1', { opacity: 1, y: 0 }); // wrapper visible; words handle animation
       }
 
       const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
       // Logo nav fades in
-      heroTl.from('.nav-logo', { opacity: 0, y: -10, duration: 0.4 }, 0);
+      heroTl.to('.nav-logo', { opacity: 1, y: 0, duration: 0.4 }, 0);
 
       // Eyebrow
-      heroTl.from('.hero-eyebrow', { opacity: 0, y: 20, duration: 0.5 }, 0.2);
+      heroTl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5 }, 0.2);
 
       // Title words stagger
-      heroTl.from('.hero-word', {
-        opacity: 0, y: 30, duration: 0.5,
+      heroTl.to('.hero-word', {
+        opacity: 1, y: 0, duration: 0.5,
         stagger: 0.06
       }, 0.5);
 
       // Subtitle
-      heroTl.from('.hero-sub', { opacity: 0, y: 20, duration: 0.5 }, 0.9);
+      heroTl.to('.hero-sub', { opacity: 1, y: 0, duration: 0.5 }, 0.9);
 
       // CTA buttons
-      heroTl.from('.hero-ctas', { opacity: 0, y: 20, duration: 0.5 }, 1.05);
+      heroTl.to('.hero-ctas', { opacity: 1, y: 0, duration: 0.5 }, 1.05);
 
       // Proof row
-      heroTl.from('.hero-proof', { opacity: 0, y: 14, duration: 0.4 }, 1.2);
+      heroTl.to('.hero-proof', { opacity: 1, y: 0, duration: 0.4 }, 1.2);
 
       // ─── INSTRUCTOR CARDS — ScrollTrigger stagger ───
-      gsap.from('.instructor-card', {
+      gsap.set('.instructor-card', { opacity: 0, y: 40 });
+      gsap.to('.instructor-card', {
         scrollTrigger: {
           trigger: '.instructor-grid',
           start: 'top 80%',
           once: true,
         },
-        opacity: 0, y: 40, duration: 0.6,
+        opacity: 1, y: 0, duration: 0.6,
         stagger: 0.08,
         ease: 'power3.out',
       });
 
       // ─── COURSE CARDS — ScrollTrigger stagger ───
-      gsap.from('#course-grid .course-card', {
+      gsap.set('#course-grid .course-card', { opacity: 0, y: 30, scale: 0.96 });
+      gsap.to('#course-grid .course-card', {
         scrollTrigger: {
           trigger: '#course-grid',
           start: 'top 80%',
           once: true,
         },
-        opacity: 0, y: 30, scale: 0.96, duration: 0.55,
+        opacity: 1, y: 0, scale: 1, duration: 0.55,
         stagger: 0.08,
         ease: 'power3.out',
       });
 
       // ─── HIW FEATURES ───
-      gsap.from('.hiw-feature', {
+      gsap.set('.hiw-feature', { opacity: 0, y: 30 });
+      gsap.to('.hiw-feature', {
         scrollTrigger: {
           trigger: '.hiw-features',
           start: 'top 80%',
           once: true,
         },
-        opacity: 0, y: 30, duration: 0.55,
+        opacity: 1, y: 0, duration: 0.55,
         stagger: 0.1,
         ease: 'power3.out',
       });
@@ -1793,17 +1807,15 @@
 
       // ─── SECTION LABELS & HEADINGS ───
       gsap.utils.toArray('.section-label, .section-heading').forEach(el => {
-        gsap.from(el, {
+        gsap.set(el, { opacity: 0, y: 20 });
+        gsap.to(el, {
           scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-          opacity: 0, y: 20, duration: 0.55, ease: 'power3.out'
+          opacity: 1, y: 0, duration: 0.55, ease: 'power3.out'
         });
       });
 
       // ─── STATS COUNT-UP ───
       // home page has no numeric stats strip, handled via hero proof text
-    } else {
-      // Reduced motion: just show everything
-      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
     }
 
     // ─── FILTER CHIPS with GSAP ───
