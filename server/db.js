@@ -35,12 +35,14 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS courses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
+    slug TEXT UNIQUE,
     subtitle TEXT,
     description TEXT,
     instructor_id INTEGER REFERENCES users(id),
     instrument TEXT,
     level TEXT,
     category TEXT,
+    tags TEXT DEFAULT '[]',
     cover_color TEXT,
     cover_accent TEXT,
     duration_weeks INTEGER,
@@ -424,11 +426,32 @@ db.exec(`
   );
 `);
 
-// Add price columns to courses if not already present (migration)
-try {
-  db.exec(`ALTER TABLE courses ADD COLUMN price_paise INTEGER DEFAULT 0`);
-  db.exec(`ALTER TABLE courses ADD COLUMN is_paid INTEGER DEFAULT 0`);
-} catch(e) { /* columns already exist */ }
+// Migrations — safe to run on existing DBs
+const migrations = [
+  `ALTER TABLE courses ADD COLUMN price_paise INTEGER DEFAULT 0`,
+  `ALTER TABLE courses ADD COLUMN is_paid INTEGER DEFAULT 0`,
+  `ALTER TABLE courses ADD COLUMN slug TEXT`,
+  `ALTER TABLE courses ADD COLUMN tags TEXT DEFAULT '[]'`,
+];
+for (const sql of migrations) {
+  try { db.exec(sql); } catch(e) { /* column already exists */ }
+}
+
+// Back-fill slugs for existing courses that have none
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+const unslugged = db.prepare("SELECT id, title FROM courses WHERE slug IS NULL OR slug = ''").all();
+const slugUpdate = db.prepare("UPDATE courses SET slug = ? WHERE id = ?");
+for (const row of unslugged) {
+  let base = slugify(row.title);
+  let slug = base;
+  let n = 2;
+  while (db.prepare("SELECT id FROM courses WHERE slug = ? AND id != ?").get(slug, row.id)) {
+    slug = `${base}-${n++}`;
+  }
+  slugUpdate.run(slug, row.id);
+}
 
 // Seed data only if tables are empty
 const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
@@ -491,50 +514,68 @@ if (userCount.count === 0) {
 
   // ── TFR Courses ──
   const courseInsert = db.prepare(`
-    INSERT INTO courses (title, subtitle, description, instructor_id, instrument, level, category, cover_color, cover_accent, duration_weeks, lesson_count, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO courses (title, slug, subtitle, description, instructor_id, instrument, level, category, tags, cover_color, cover_accent, duration_weeks, lesson_count, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const course1 = courseInsert.run(
     'Sitar — The Complete Foundation',
+    'sitar-the-complete-foundation',
     'From first notes to raga mastery',
     'An immersive journey into the world of the sitar under Niladri Kumar\'s direct mentorship. Beginning with instrument anatomy, correct posture, and meend (glide) technique, students progress through foundational ragas in the Imdadkhani gharana tradition. Live sessions include real-time corrections, dedicated riyaz modules, and performance recordings reviewed by Niladri himself.',
-    niladri.lastInsertRowid, 'Sitar', 'Foundation', 'Sitar', '#1A0D00', '#C8A84B', 16, 32, 'active'
+    niladri.lastInsertRowid, 'Sitar', 'Foundation', 'Sitar',
+    '["Hindustani Classical","Raga","Imdadkhani Gharana","Beginner Friendly"]',
+    '#1A0D00', '#C8A84B', 16, 32, 'active'
   );
 
   const course2 = courseInsert.run(
     'Djembe & World Percussions',
+    'djembe-world-percussions',
     'Rhythm as a universal language',
     'Taufiq Qureshi opens the world of rhythm in this extraordinary course blending Djembe, tabla bols, and world percussion traditions. Students learn polyrhythmic patterns, groove construction, and the meditative quality of deep listening. Suitable for complete beginners and practising musicians alike who want to awaken their inner rhythm.',
-    taufiq.lastInsertRowid, 'Djembe', 'Foundation', 'Percussion', '#001A08', '#C8A84B', 12, 24, 'active'
+    taufiq.lastInsertRowid, 'Djembe', 'Foundation', 'Percussion',
+    '["World Music","Rhythm","Tabla","Polyrhythm","Beginner Friendly"]',
+    '#001A08', '#C8A84B', 12, 24, 'active'
   );
 
   const course3 = courseInsert.run(
     'Hindustani Vocals — Kirana Gharana',
+    'hindustani-vocals-kirana-gharana',
     'The science and art of the classical voice',
     'Train your voice under Sveta Kilpady in the tradition of the Kirana gharana. This course covers sur (pitch), layakari (rhythm), raga grammar, and the art of khayal and thumri. Students receive personalized feedback on their practice recordings and participate in live group mehfils each month.',
-    sveta.lastInsertRowid, 'Vocals', 'Intermediate', 'Vocals', '#1A0014', '#C8A84B', 20, 40, 'active'
+    sveta.lastInsertRowid, 'Vocals', 'Intermediate', 'Vocals',
+    '["Khayal","Thumri","Raga","Sur","Kirana Gharana"]',
+    '#1A0014', '#C8A84B', 20, 40, 'active'
   );
 
   const course4 = courseInsert.run(
     'Kathak — Lucknow Gharana',
+    'kathak-lucknow-gharana',
     'Grace, rhythm and storytelling in motion',
     'Guruma Sangeeta Sinha guides students through the graceful Lucknow style of Kathak — from foundational tatkar (footwork) and hastas (hand gestures) to full compositions and thumri abhinaya. Each module is structured around a thematic rasa, bringing together the technical and expressive dimensions of the dance.',
-    sangeeta.lastInsertRowid, 'Kathak', 'Foundation', 'Dance', '#001A1A', '#C8A84B', 24, 48, 'active'
+    sangeeta.lastInsertRowid, 'Kathak', 'Foundation', 'Dance',
+    '["Classical Dance","Tatkar","Abhinaya","Lucknow Gharana","Thumri"]',
+    '#001A1A', '#C8A84B', 24, 48, 'active'
   );
 
   const course5 = courseInsert.run(
     'Film Songs — The Playback Art',
+    'film-songs-the-playback-art',
     'Singing for the camera and microphone',
     'Milind Singh demystifies the world of Bollywood playback singing in this practical, studio-oriented course. Learn mic technique, breath control for recording, stylistic interpretation of film songs across eras, and how to prepare for studio sessions. Includes exclusive behind-the-scenes insights from three decades of Hindi film music.',
-    milind.lastInsertRowid, 'Vocals', 'Intermediate', 'Film Songs', '#1A1000', '#C8A84B', 12, 24, 'active'
+    milind.lastInsertRowid, 'Vocals', 'Intermediate', 'Film Songs',
+    '["Bollywood","Playback Singing","Studio","Mic Technique","Film Music"]',
+    '#1A1000', '#C8A84B', 12, 24, 'active'
   );
 
   const course6 = courseInsert.run(
     'Writer\'s Room with Makarand Deshpande',
+    'writers-room-makarand-deshpande',
     'Find your voice. Tell your truth.',
     'Makarand Deshpande\'s Writer\'s Room is unlike any writing course you\'ve experienced. Part masterclass, part therapy, part performance — these live sessions push actors, writers and storytellers to excavate their deepest material and transform it into compelling work. Absolutely no prior writing experience required.',
-    makarand.lastInsertRowid, 'Writing', 'Foundation', 'Acting', '#0A0A1A', '#C8A84B', 10, 20, 'active'
+    makarand.lastInsertRowid, 'Writing', 'Foundation', 'Acting',
+    '["Scriptwriting","Theatre","Storytelling","Performance","Acting"]',
+    '#0A0A1A', '#C8A84B', 10, 20, 'active'
   );
 
   const c1 = course1.lastInsertRowid;

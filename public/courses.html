@@ -847,12 +847,12 @@
       <div>
         <p class="footer-col-title">Courses</p>
         <ul class="footer-links">
-          <li><a href="/course-landing.html?id=1">Sitar with Niladri Kumar</a></li>
-          <li><a href="/course-landing.html?id=2">Djembe &amp; Percussions — Taufiq Qureshi</a></li>
-          <li><a href="/course-landing.html?id=3">Hindustani Vocals — Sveta Kilpady</a></li>
-          <li><a href="/course-landing.html?id=4">Kathak — Guruma Sangeeta Sinha</a></li>
-          <li><a href="/course-landing.html?id=5">Film Songs — Milind Singh</a></li>
-          <li><a href="/course-landing.html?id=6">Acting — Makarand Deshpande</a></li>
+          <li><a href="/courses/sitar-the-complete-foundation">Sitar with Niladri Kumar</a></li>
+          <li><a href="/courses/djembe-world-percussions">Djembe &amp; Percussions — Taufiq Qureshi</a></li>
+          <li><a href="/courses/hindustani-vocals-kirana-gharana">Hindustani Vocals — Sveta Kilpady</a></li>
+          <li><a href="/courses/kathak-lucknow-gharana">Kathak — Guruma Sangeeta Sinha</a></li>
+          <li><a href="/courses/film-songs-the-playback-art">Film Songs — Milind Singh</a></li>
+          <li><a href="/courses/writers-room-makarand-deshpande">Acting — Makarand Deshpande</a></li>
         </ul>
       </div>
       <div>
@@ -997,7 +997,7 @@
       const excerpt    = course.description || course.excerpt || 'Master the craft with India\'s finest performing artists in an intimate, live learning environment.';
       const lessons    = course.lesson_count ? `${course.lesson_count} lesson${course.lesson_count === 1 ? '' : 's'}` : '';
       const price      = formatPrice(course.price);
-      const href       = `/course-landing.html?id=${course.id}`;
+      const href       = `/courses/${course.slug || course.id}`;
 
       return `
         <div class="course-card" data-cat="${catKey}" data-id="${course.id}">

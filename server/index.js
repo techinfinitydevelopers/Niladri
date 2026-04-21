@@ -16,8 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── Root & login routes (declared BEFORE express.static so they
-//    take precedence over public/index.html being auto-served for /)
+// ── Root & named routes (declared BEFORE express.static) ──
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/home.html'));
 });
@@ -26,6 +25,13 @@ app.get('/login', (req, res) => {
 });
 app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// ── SEO-friendly course URLs: /courses/:slug ──
+// /courses → courses.html (static file, served by express.static)
+// /courses/sitar-the-complete-foundation → course-landing.html (JS reads slug from pathname)
+app.get('/courses/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/course-landing.html'));
 });
 
 // ── Public (no-auth) API for landing pages ──

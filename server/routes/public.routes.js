@@ -72,9 +72,12 @@ router.get('/courses', (req, res) => {
   }
 });
 
-// GET /api/public/courses/:id  — single course detail with chapters/lessons (no auth)
-router.get('/courses/:id', (req, res) => {
+// GET /api/public/courses/:slugOrId  — single course by slug (preferred) or numeric id
+router.get('/courses/:slugOrId', (req, res) => {
   try {
+    const { slugOrId } = req.params;
+    // Try slug first, fall back to numeric id for backward compat
+    const isNumeric = /^\d+$/.test(slugOrId);
     const course = db.prepare(`
       SELECT c.*,
              u.first_name || ' ' || u.last_name AS instructor_name,
@@ -83,19 +86,18 @@ router.get('/courses/:id', (req, res) => {
              u.instrument AS instructor_instrument
       FROM courses c
       LEFT JOIN users u ON c.instructor_id = u.id
-      WHERE c.id = ? AND c.status = 'active'
-    `).get(req.params.id);
+      WHERE ${isNumeric ? 'c.id = ?' : 'c.slug = ?'} AND c.status = 'active'
+    `).get(slugOrId);
 
     if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    // Chapters + lesson titles (no content_url for unauthenticated users)
     const chapters = db.prepare(
       'SELECT * FROM chapters WHERE course_id = ? ORDER BY order_index'
-    ).all(req.params.id);
+    ).all(course.id);
 
     const lessons = db.prepare(
       'SELECT id, chapter_id, title, order_index, type, duration_minutes FROM lessons WHERE course_id = ? ORDER BY order_index'
-    ).all(req.params.id);
+    ).all(course.id);
 
     const chaptersWithLessons = chapters.map(ch => ({
       ...ch,

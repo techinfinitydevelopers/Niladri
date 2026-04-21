@@ -64,19 +64,28 @@ router.post('/courses', (req, res) => {
   try {
     const {
       title, subtitle, description, instructor_id, instrument,
-      level, category, cover_color, duration_weeks, status
+      level, category, tags, cover_color, duration_weeks, status
     } = req.body;
 
     if (!title) return res.status(400).json({ error: 'title is required' });
 
+    // Auto-generate unique slug from title
+    let baseSlug = slugify(title);
+    let slug = baseSlug;
+    let n = 2;
+    while (db.prepare('SELECT id FROM courses WHERE slug = ?').get(slug)) {
+      slug = `${baseSlug}-${n++}`;
+    }
+
     const result = db.prepare(`
-      INSERT INTO courses (title, subtitle, description, instructor_id, instrument, level, category, cover_color, duration_weeks, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO courses (title, slug, subtitle, description, instructor_id, instrument, level, category, tags, cover_color, duration_weeks, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      title, subtitle || null, description || null,
+      title, slug, subtitle || null, description || null,
       instructor_id || null, instrument || null,
-      level || null, category || null, cover_color || null,
-      duration_weeks || null, status || 'active'
+      level || null, category || null,
+      tags ? JSON.stringify(Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : '[]',
+      cover_color || null, duration_weeks || null, status || 'active'
     );
 
     const course = db.prepare('SELECT * FROM courses WHERE id = ?').get(result.lastInsertRowid);
@@ -101,6 +110,25 @@ router.put('/courses/:id', (req, res) => {
         updates.push(`${f} = ?`);
         params.push(req.body[f]);
       }
+    }
+
+    // Regenerate slug if title changed
+    if (req.body.title && req.body.title !== existing.title) {
+      let baseSlug = slugify(req.body.title);
+      let slug = baseSlug;
+      let n = 2;
+      while (db.prepare('SELECT id FROM courses WHERE slug = ? AND id != ?').get(slug, req.params.id)) {
+        slug = `${baseSlug}-${n++}`;
+      }
+      updates.push('slug = ?');
+      params.push(slug);
+    }
+
+    // Handle tags field
+    if (req.body.tags !== undefined) {
+      const tagsArr = Array.isArray(req.body.tags) ? req.body.tags : String(req.body.tags).split(',').map(t => t.trim()).filter(Boolean);
+      updates.push('tags = ?');
+      params.push(JSON.stringify(tagsArr));
     }
 
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });

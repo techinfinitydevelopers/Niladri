@@ -390,9 +390,18 @@ function el(tag, cls, html) {
   return e;
 }
 
-// ─── Get course ID from URL ──────────────────────────────────────────────────
-const params = new URLSearchParams(window.location.search);
-const courseId = params.get('id');
+// ─── Get course slug or id from URL ─────────────────────────────────────────
+// Supports both SEO URLs (/courses/sitar-the-complete-foundation)
+// and legacy query strings (?id=1) for backward compatibility
+let courseId = null;
+const pathParts = window.location.pathname.split('/');
+const slugFromPath = pathParts[pathParts.length - 1]; // last segment
+if (slugFromPath && slugFromPath !== 'course-landing.html' && slugFromPath !== '') {
+  courseId = slugFromPath; // slug (string) or numeric id
+} else {
+  const params = new URLSearchParams(window.location.search);
+  courseId = params.get('id');
+}
 
 if (!courseId) {
   showError('No course specified.');
