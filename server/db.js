@@ -405,6 +405,23 @@ db.exec(`
     error TEXT,
     sent_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS blogs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    excerpt TEXT,
+    body TEXT,
+    cover_image TEXT,
+    author_id INTEGER REFERENCES users(id),
+    category TEXT DEFAULT 'general',
+    tags TEXT DEFAULT '[]',
+    status TEXT DEFAULT 'draft',
+    published_at TEXT,
+    views INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 // Add price columns to courses if not already present (migration)

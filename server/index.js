@@ -70,6 +70,10 @@ app.use('/api/resources', require('./middleware/auth'), require('./routes/resour
 app.use('/api/email', require('./middleware/auth'), require('./routes/email.routes'));
 app.use('/api/roles', require('./middleware/auth'), require('./routes/roles.routes'));
 
+// CMS & Blog
+app.use('/api/cms', require('./middleware/auth'), require('./routes/cms.routes'));
+app.use('/api/blog', require('./routes/blog.routes'));
+
 // SPA fallback — serve home for non-API, non-file routes
 app.get('*', (req, res) => {
   const file = path.join(__dirname, '../public', req.path);
